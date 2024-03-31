@@ -8,7 +8,7 @@ interface RouterState {
 }
 
 export const useRouter = create<RouterState>(set => ({
-  pathname: '/test',
+  pathname: '/',
   params: '',
   setPathname: (pathname: Pathname) => set({ pathname, params: pathname.slice(1) }),
 }));

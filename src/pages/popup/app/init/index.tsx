@@ -1,80 +1,38 @@
-import NearProtocolImage from '@assets/img/near-protocol-logo.png';
-import Link from '../../components/Link';
-import { useRef, useState } from 'react';
-import { sendMessageToBackgroundAsync } from '@root/src/chrome/message';
-import { useRouter } from '@root/src/stores/useRouter';
-import { cls } from '@root/utils/util';
+import { useState } from 'react';
+import CreateAccountSection from '@pages/popup/app/init/create-account';
+import CreateProofSection from '@pages/popup/app/init/create-proof';
+import VerifyProofSection from '@pages/popup/app/init/verify-proof';
 
-const createAccount = async (id: string) => {
-  console.log('create account');
-  const res = await sendMessageToBackgroundAsync({
-    type: 'CreateAccount',
-    input: {
-      id,
-    },
-    code: 200,
-  });
-  console.log(res);
-  return res;
-};
+const TOTAL_STEP = 3;
 
 export default function InitSection() {
-  const { setPathname } = useRouter();
-  const accountIdRef = useRef<HTMLInputElement>();
-  const accountPwRef = useRef<HTMLInputElement>();
-  const [isAvailable, setIsAvailable] = useState(true);
+  const [step, setStep] = useState(0);
 
-  const handleSubmit = async () => {
-    if (accountIdRef.current?.value !== '') {
-      // const isAvailable = await isAccountIdAvailable(accountIdRef.current.value + '.testnet');
-      // setIsAvailable(isAvailable);
-      // if (!isAvailable) {
-      //   alert(`Account ID${accountIdRef.current.value} is already used`);
-      //   return;
-      // }
-      // const res = await createAccount(accountIdRef.current.value + '.testnet');
-      // alert(res);
-      //setPathname('/create-wallet');
-    } else {
-      setIsAvailable(false);
-    }
+  const handleNext = () => {
+    setStep(prevStep => Math.min(prevStep + 1, TOTAL_STEP - 1));
+  };
+
+  const handlePrevious = () => {
+    setStep(prevStep => Math.max(prevStep - 1, 0));
   };
 
   return (
-    <section className="flex flex-col items-center gap-y-12 px-24">
-      <div className="flex flex-col items-center mt-20">
-        <h1 className="text-2xl text-black font-bold">Welcome to Wallet!</h1>
-        <img src={NearProtocolImage} alt="near protocol" width={200} />
-      </div>
-      <div className="flex flex-col gap-y-4 w-full">
-        <h2 className="text-sm">Claim your identity!</h2>
-        <div
-          className={cls(
-            'relative overflow-hidden text-base flex rounded-full border text-lg',
-            isAvailable ? 'border-green-300' : 'border-red-500',
-          )}>
-          <input ref={accountIdRef} placeholder="Account ID" className="ml-8 w-fit focus:outline-none" type="text" />
-          <p className="absolute right-8">.testnet</p>
-        </div>
-        <div
-          className={cls(
-            'relative overflow-hidden text-base flex rounded-full border text-lg',
-            isAvailable ? 'border-green-300' : 'border-red-500',
-          )}>
-          <input ref={accountPwRef} placeholder="Password" className="ml-8 w-fit focus:outline-none" type="text" />
-          <p className="absolute right-8"></p>
+    <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
+      <div className="relative w-full overflow-hidden h-full">
+        <div className="flex transition-transform duration-500" style={{ transform: `translateX(-${step * 100}vw)` }}>
+          <CreateAccountSection onNextStep={handleNext} />
+          <CreateProofSection />
+          <VerifyProofSection />
         </div>
       </div>
-      <div className="flex flex-col w-full">
-        <button
-          onClick={handleSubmit}
-          className="flex items-center justify-center w-full py-8 h-32 bg-indigo-600 text-base text-white rounded-full">
-          Create Wallet
+      <div className="flex gap-x-4 mt-4">
+        <button className="px-4 py-2" onClick={handlePrevious} disabled={step === 0}>
+          Previous
         </button>
-        <Link pathname="/import-wallet" className="underline text-gray-600">
-          Import an existing wallet
-        </Link>
+        <button className="px-4 py-2" onClick={handleNext} disabled={step === TOTAL_STEP - 1}>
+          Next
+        </button>
       </div>
-    </section>
+    </div>
   );
 }
