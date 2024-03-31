@@ -66,7 +66,7 @@ export default function CreateProofSection() {
     <section className="flex-none flex flex-col w-screen h-screen items-center justify-center noscroll gap-y-8 px-16">
       <form onSubmit={onCreateVC} className="flex flex-col items-center jusfity-center gap-y-8">
         <div className="flex gap-x-8">
-          <label>Email</label>
+          <p>Email</p>
           <input
             type="email"
             placeholder="학과 이메일"
@@ -76,7 +76,7 @@ export default function CreateProofSection() {
           <button className="bg-blue-500 text-white p-2 rounded-md">인증</button>
         </div>
         <div className="flex gap-x-8">
-          <label>학번</label>
+          <p>학번</p>
           <input
             type="text"
             placeholder="학번"
