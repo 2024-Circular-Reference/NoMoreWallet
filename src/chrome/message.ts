@@ -77,3 +77,9 @@ export function sendErrorMessageToClient(port: chrome.runtime.Port, error: unkno
 
   sendMessageToClient(port, { type: 'Error', error: sendError, code: 400 });
 }
+
+export function sendMessageToContentScript(type: string, message: string) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, { type: type, message: message });
+  });
+}
