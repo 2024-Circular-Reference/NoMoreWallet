@@ -5,5 +5,9 @@ export default function App() {
     console.log('content view loaded');
   }, []);
 
-  return <div className="">content view</div>;
+  return (
+    <div className="" id="2024-pnu-wallet">
+      2024 순환참조 지갑 흔적
+    </div>
+  );
 }
