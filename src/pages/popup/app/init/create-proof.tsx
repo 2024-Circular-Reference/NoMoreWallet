@@ -3,8 +3,9 @@ import { useAuth } from '@src/stores/useAuth';
 import axios from '@pages/lib/utils/axios';
 import { useLoading } from '@src/stores/useLoading';
 import init, { wasm_test } from 'zkp_circuit';
+import { cls } from '@root/utils/util';
 
-export default function CreateProofSection() {
+export default function CreateProofSection({ isActive }: { isActive: boolean }) {
   const { auth, setDid, setProof } = useAuth();
   const { setLoading } = useLoading();
   const emailRef = useRef<HTMLInputElement>();
@@ -63,35 +64,53 @@ export default function CreateProofSection() {
   };
 
   return (
-    <section className="flex-none flex flex-col w-screen h-screen items-center justify-center noscroll gap-y-8 px-16">
-      <form onSubmit={onCreateVC} className="flex flex-col items-center jusfity-center gap-y-8">
-        <div className="flex gap-x-8">
-          <p>Email</p>
+    <section
+      className={cls(
+        'flex-none flex flex-col w-screen min-h-screen items-center justify-center gap-y-48 overflow-scroll',
+        isActive ? 'block' : 'hidden',
+      )}>
+      <div>
+        <p className="text-20 font-bold mt-24 text-center">학교에서 발급받은 인증서로</p>
+        <p className="text-20 font-bold text-center">당신만의 증명을 생성해보세요!</p>
+      </div>
+      <form onSubmit={onCreateVC} className="flex flex-col items-center jusfity-center gap-y-8 w-full px-24">
+        <div className="flex w-full">
+          <p>인증기관</p>
+          <select className="p-2 border border-gray-300 rounded-md mb-4 ml-auto">
+            <option value="near">부산대학교</option>
+            <option value="klaytn">동아대학교</option>
+          </select>
+        </div>
+        <div className="flex w-full items-center justify-center">
+          <p>이메일</p>
           <input
             type="email"
             placeholder="학과 이메일"
-            className="p-2 border border-gray-300 rounded-md mb-4"
+            className="px-4 border border-gray-300 rounded-l-md ml-auto focus:outline-none"
             ref={emailRef}
           />
-          <button className="bg-blue-500 text-white p-2 rounded-md">인증</button>
+          <button className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400">인증</button>
         </div>
-        <div className="flex gap-x-8">
-          <p>학번</p>
-          <input
-            type="text"
-            placeholder="학번"
-            className="p-2 border border-gray-300 rounded-md mb-4"
-            ref={studentIdRef}
-          />
+        <div className="flex w-full">
+          <label>계정 ID</label>
+          <p className="ml-auto">{auth.account?.accountId}.testnet</p>
         </div>
-        <div className="flex gap-x-8 max-w-1/2">
-          <label>공개키</label>
-          <p>{auth.account?.accountId}.testnet</p>
-        </div>
-        <button className="w-full h-32 bg-gray-900 text-white rounded-xl">Proof 생성</button>
+        <button className="w-full h-32 bg-secondary text-white rounded-12 ">Proof 생성</button>
       </form>
-      <p>vc: </p>
-      <p>proof: </p>
+      <div id="proof-view" className="flex flex-col gap-y-4 w-full px-24 mt-24">
+        <div className="flex w-full">
+          <label>VC</label>
+          <textarea disabled={true} className="ml-auto w-1/2 focus:outline-none rounded-8 bg-white">
+            {auth.did?.vc}
+          </textarea>
+        </div>
+        <div className="flex w-full">
+          <label>ZK-Proof</label>
+          <textarea disabled={true} className="ml-auto w-1/2 focus:outline-none rounded-8 bg-white">
+            {auth.proof}
+          </textarea>
+        </div>
+      </div>
     </section>
   );
 }

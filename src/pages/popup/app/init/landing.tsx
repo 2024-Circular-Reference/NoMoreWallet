@@ -1,13 +1,19 @@
 import NoMoreWalletLogo from '@assets/img/no-more-wallet-logo.png';
+import { cls } from '@root/utils/util';
 
 interface Props {
   onNextStep: () => void;
+  isActive: boolean;
 }
 
-export default function LandingSection({ onNextStep }: Props) {
+export default function LandingSection({ onNextStep, isActive }: Props) {
   return (
-    <section className="flex-none flex flex-col items-center gap-y-24 px-24 w-screen h-screen">
-      <div className="flex flex-col items-center mt-12">
+    <section
+      className={cls(
+        'flex-none flex flex-col items-center gap-y-24 px-24 w-screen h-screen',
+        isActive ? 'block' : 'hidden',
+      )}>
+      <div className={cls('flex flex-col items-center mt-12')}>
         <img src={NoMoreWalletLogo} alt="near protocol" width={200} />
         <p
           className="text-20 font-bold w-full text-center leading-48 opacity-0 animate-fadeIn"

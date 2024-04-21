@@ -7,7 +7,7 @@ import LandingSection from '@pages/popup/app/init/landing';
 const TOTAL_STEP = 4;
 
 export default function InitSection() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
 
   const handleNext = () => {
     setStep(prevStep => Math.min(prevStep + 1, TOTAL_STEP - 1));
@@ -20,11 +20,11 @@ export default function InitSection() {
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
       <div className="relative w-full overflow-hidden h-full">
-        <div className="flex transition-transform duration-500" style={{ transform: `translateX(-${step * 100}vw)` }}>
-          <LandingSection onNextStep={handleNext} />
-          <CreateAccountSection onNextStep={handleNext} />
-          <CreateProofSection />
-          <VerifyProofSection />
+        <div className="flex transition-transform duration-500" style={{}}>
+          <LandingSection onNextStep={handleNext} isActive={step === 0} />
+          <CreateAccountSection onNextStep={handleNext} isActive={step === 1} />
+          <CreateProofSection isActive={step === 2} />
+          <VerifyProofSection isActive={step === 3} />
         </div>
       </div>
       <div className="flex gap-x-4 mt-4">

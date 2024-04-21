@@ -21,9 +21,10 @@ const createAccount = async (id: string) => {
 
 interface Props {
   onNextStep: () => void;
+  isActive: boolean;
 }
 
-export default function CreateAccountSection({ onNextStep }: Props) {
+export default function CreateAccountSection({ onNextStep, isActive }: Props) {
   const accountIdRef = useRef<HTMLInputElement>();
   const [isAvailable, setIsAvailable] = useState(true);
   const { setLoading } = useLoading();
@@ -45,10 +46,11 @@ export default function CreateAccountSection({ onNextStep }: Props) {
   };
 
   return (
-    <section className="flex-none flex flex-col items-center px-24 w-screen h-screen">
+    <section
+      className={cls('flex-none flex flex-col items-center px-24 w-screen h-screen', isActive ? 'block' : 'hidden')}>
       <div>
         <p className="text-20 font-bold mt-96 text-center">당신을 증명할</p>
-        <p className="text-20 font-bold text-center">계정을 생성해보세요</p>
+        <p className="text-20 font-bold text-center">계정을 생성해보세요!</p>
       </div>
       <form className="flex flex-col gap-y-4 animate-fadeIn opacity-0 mt-96">
         <div
