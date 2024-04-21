@@ -1,10 +1,10 @@
-import NearProtocolImage from '@assets/img/near-protocol-logo.png';
 import Link from '../../components/Link';
 import { FormEvent, useRef, useState } from 'react';
 import { cls } from '@root/utils/util';
 import { sendMessageToBackgroundAsync } from '@src/chrome/message';
 import { useLoading } from '@src/stores/useLoading';
 import { useAuth } from '@src/stores/useAuth';
+import NoMoreWalletLogo from '@assets/img/no-more-wallet-logo.png';
 
 const createAccount = async (id: string) => {
   console.log('create account');
@@ -45,36 +45,38 @@ export default function CreateAccountSection({ onNextStep }: Props) {
   };
 
   return (
-    <section className="flex-none flex flex-col items-center gap-y-12 px-24 w-screen h-screen">
-      <div className="flex flex-col items-center mt-20">
-        <h1 className="text-2xl text-black font-bold">Welcome to Wallet!</h1>
-        <img src={NearProtocolImage} alt="near protocol" width={200} />
+    <section className="flex-none flex flex-col items-center px-24 w-screen h-screen">
+      <div>
+        <p className="text-20 font-bold mt-96 text-center">당신을 증명할</p>
+        <p className="text-20 font-bold text-center">계정을 생성해보세요</p>
       </div>
-      <form className="flex flex-col gap-y-8">
-        <div className="flex flex-col gap-y-4 w-full">
-          <div
-            className={cls(
-              'relative overflow-hidden text-base flex rounded-full border text-lg',
-              isAvailable ? 'border-slate-400' : 'border-red-500',
-            )}>
-            <input
-              ref={accountIdRef}
-              defaultValue={auth.account?.accountId}
-              placeholder="Account ID"
-              className="ml-8 w-fit focus:outline-none"
-              type="text"
-            />
-            <p className="absolute right-8">.testnet</p>
-          </div>
+      <form className="flex flex-col gap-y-4 animate-fadeIn opacity-0 mt-96">
+        <div
+          className={cls(
+            'relative text-base flex items-center animate-fadeIn opacity-0',
+            isAvailable ? 'border-slate-400' : 'border-red-500',
+          )}
+          style={{ animationDelay: '1.0s' }}>
+          <input
+            ref={accountIdRef}
+            defaultValue={auth.account?.accountId}
+            placeholder="Account ID"
+            className="w-fit focus:outline-none bg-transparent text-lg"
+            type="text"
+          />
+          <label className="absolute right-0 rounded-12 border border-secondary px-4 text-sm">testnet</label>
         </div>
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full gap-y-4">
           <button
             onClick={onCreateAccount}
-            className="flex items-center justify-center w-full py-8 h-32 bg-black text-base text-white rounded-full">
-            Create Account
+            className="flex items-center justify-center w-full py-2 bg-secondary text-sm text-white rounded-full opacity-0 animate-fadeIn"
+            style={{ animationDelay: '2.0s' }}>
+            계정 생성하기
           </button>
           <Link pathname="/import-wallet" className="underline text-gray-600">
-            Import an existing wallet
+            <div className="underline text-gray-600 animate-fadeIn opacity-0" style={{ animationDelay: '3.0s' }}>
+              기존 계정으로 로그인하기
+            </div>
           </Link>
         </div>
       </form>

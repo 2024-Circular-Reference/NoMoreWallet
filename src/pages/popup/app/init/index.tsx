@@ -2,11 +2,12 @@ import { useState } from 'react';
 import CreateAccountSection from '@pages/popup/app/init/create-account';
 import CreateProofSection from '@pages/popup/app/init/create-proof';
 import VerifyProofSection from '@pages/popup/app/init/verify-proof';
+import LandingSection from '@pages/popup/app/init/landing';
 
-const TOTAL_STEP = 3;
+const TOTAL_STEP = 4;
 
 export default function InitSection() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
 
   const handleNext = () => {
     setStep(prevStep => Math.min(prevStep + 1, TOTAL_STEP - 1));
@@ -20,6 +21,7 @@ export default function InitSection() {
     <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
       <div className="relative w-full overflow-hidden h-full">
         <div className="flex transition-transform duration-500" style={{ transform: `translateX(-${step * 100}vw)` }}>
+          <LandingSection onNextStep={handleNext} />
           <CreateAccountSection onNextStep={handleNext} />
           <CreateProofSection />
           <VerifyProofSection />
