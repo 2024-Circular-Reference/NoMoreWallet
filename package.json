@@ -1,11 +1,11 @@
 {
-  "   name": "Circuit-Reference-Wallet",
-  "version": "0.0.1",
+  "   name": "프라프라 왈렛",
+  "version": "1.0.0",
   "description": "PNU 2024 - Circuit Reference Wallet",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite.git"
+    "url": "https://github.com/2024-Circular-Reference/near-wallet-test"
   },
   "scripts": {
     "build": "tsc --noEmit && vite build",
