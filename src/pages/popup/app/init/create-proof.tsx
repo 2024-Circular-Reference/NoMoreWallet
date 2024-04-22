@@ -4,6 +4,8 @@ import axios from '@pages/lib/utils/axios';
 import { useLoading } from '@src/stores/useLoading';
 import init, { wasm_test } from 'zkp_circuit';
 import { cls } from '@root/utils/util';
+import { useToast } from '@src/stores/useToast';
+import { useVerifyEmail } from '@root/src/stores/useVerifyEmail';
 
 export default function CreateProofSection({
     isActive,
@@ -14,6 +16,8 @@ export default function CreateProofSection({
     const { setLoading } = useLoading();
     const emailRef = useRef<HTMLInputElement>();
     const studentIdRef = useRef<HTMLInputElement>();
+    const { openToast } = useToast();
+    const { setVerifingCode } = useVerifyEmail();
 
     const onCreateVC = async (e: FormEvent) => {
         e.preventDefault();
@@ -67,6 +71,35 @@ export default function CreateProofSection({
         });
     };
 
+    const onVerifyEmail = async () => {
+        const email = emailRef.current.value;
+        try {
+            const res = await axios({
+                method: 'post',
+                url: 'http://localhost:8081/api/holder/v1/send-email',
+                data: {
+                    email,
+                },
+            });
+            console.log(res);
+            if (res.data.statusCode === 200) {
+                openToast(
+                    `이메일 인증이 완료되었습니다. ${res.data.data.token}`,
+                    'success'
+                );
+                setVerifingCode(res.data.data.token);
+            } else {
+                throw new Error('failed verify email' + res);
+            }
+        } catch (e) {
+            console.error(e);
+            openToast(
+                '이메일 인증에 실패했습니다. 다시 시도해주세요.',
+                'error'
+            );
+        }
+    };
+
     return (
         <section
             className={cls(
@@ -85,10 +118,7 @@ export default function CreateProofSection({
                     당신만의 증명을 생성해보세요!
                 </p>
             </div>
-            <form
-                onSubmit={onCreateVC}
-                className="flex flex-col items-center jusfity-center gap-y-8 w-full px-24 mt-24"
-            >
+            <div className="flex flex-col items-center jusfity-center gap-y-8 w-full px-24 mt-24">
                 <div
                     className="flex w-full animate-fadeIn opacity-0"
                     style={{ animationDelay: '1.5s' }}
@@ -110,7 +140,10 @@ export default function CreateProofSection({
                         className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
                         ref={emailRef}
                     />
-                    <button className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400">
+                    <button
+                        className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400"
+                        onClick={onVerifyEmail}
+                    >
                         인증
                     </button>
                 </div>
@@ -124,10 +157,11 @@ export default function CreateProofSection({
                 <button
                     className="w-full h-32 bg-secondary text-white rounded-12 mt-12 animate-fadeIn opacity-0"
                     style={{ animationDelay: '3.0s' }}
+                    onClick={onCreateVC}
                 >
                     Proof 생성
                 </button>
-            </form>
+            </div>
             <hr
                 className="w-[calc(100%-16px)] animate-fadeIn opacity-0 bg-secondary h-2 mt-24"
                 style={{ animationDelay: '4.0s' }}
