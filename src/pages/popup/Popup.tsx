@@ -16,13 +16,13 @@ function Popup() {
 
   return (
     <MainLayout>
-      <LoadingModal />
       {pathname === '/' && <InitSection />}
       {pathname === '/login-wallet' && <LoginWalletSection />}
       {pathname === '/create-wallet' && <CreateWalletSection />}
       {pathname === '/import-wallet' && <ImportWalletSection />}
       {pathname === '/home' && <HomeSection />}
       {pathname === '/test' && <TestSection />}
+      <LoadingModal />
     </MainLayout>
   );
 }

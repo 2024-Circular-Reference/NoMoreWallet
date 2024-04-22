@@ -1,6 +1,6 @@
 import { useLoading } from '@root/src/stores/useLoading';
 import Portal from './Portal';
-import { DotLoader } from 'react-spinners';
+import { BounceLoader } from 'react-spinners';
 
 const LoadingModal = () => {
   const isLoading = useLoading(state => state.isLoading);
@@ -11,7 +11,7 @@ const LoadingModal = () => {
 
   return (
     <Portal>
-      <DotLoader color="#0281dc" loading={isLoading} size={50} aria-label="Loading Spinner" data-testid="loader" />
+      <BounceLoader color="#3B5F6E" loading={isLoading} size={50} aria-label="Loading Spinner" data-testid="loader" />
     </Portal>
   );
 };

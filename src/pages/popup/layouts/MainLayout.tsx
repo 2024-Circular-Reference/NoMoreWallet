@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import Footer from '../components/Footer';
 import NoMoreHeader from '@pages/popup/components/NoMoreHeader';
 
 type MainLayoutProps = {
@@ -8,7 +7,7 @@ type MainLayoutProps = {
 
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
-    <main className="relative h-600 overflow-y-auto bg-primary text-secondary">
+    <main className="relative h-600 bg-primary text-secondary scroll-hidden">
       <NoMoreHeader />
       <div className="h-32" />
       {children}

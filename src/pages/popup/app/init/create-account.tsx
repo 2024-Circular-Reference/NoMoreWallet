@@ -1,10 +1,8 @@
-import Link from '../../components/Link';
 import { FormEvent, useRef, useState } from 'react';
 import { cls } from '@root/utils/util';
 import { sendMessageToBackgroundAsync } from '@src/chrome/message';
 import { useLoading } from '@src/stores/useLoading';
 import { useAuth } from '@src/stores/useAuth';
-import NoMoreWalletLogo from '@assets/img/no-more-wallet-logo.png';
 
 const createAccount = async (id: string) => {
   console.log('create account');
@@ -32,17 +30,25 @@ export default function CreateAccountSection({ onNextStep, isActive }: Props) {
 
   const onCreateAccount = async (e: FormEvent) => {
     e.preventDefault();
-    if (accountIdRef.current?.value !== '') {
+    if (accountIdRef.current?.value === '') {
+      setIsAvailable(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
       const newAccountId = accountIdRef.current.value + '.testnet';
-      setLoading(true);
       const res = await createAccount(newAccountId);
+
       console.log(res);
       setAccount(res);
-      setLoading(false);
+
       onNextStep();
-    } else {
-      alert('account id is empty');
+    } catch (e) {
+      console.error(e);
+      alert('계정 이름이 중복되었습니다! 다른 이름을 입력해주세요.');
     }
+    setLoading(false);
   };
 
   return (
@@ -52,7 +58,7 @@ export default function CreateAccountSection({ onNextStep, isActive }: Props) {
         <p className="text-20 font-bold mt-96 text-center">1. 당신을 증명할</p>
         <p className="text-20 font-bold text-center">계정을 생성해보세요!</p>
       </div>
-      <form className="flex flex-col gap-y-12 animate-fadeIn opacity-0 mt-48">
+      <form className="flex flex-col gap-y-12 animate-fadeIn opacity-0 mt-96">
         <div
           className={cls(
             'relative text-base flex items-center animate-fadeIn opacity-0',
@@ -71,15 +77,15 @@ export default function CreateAccountSection({ onNextStep, isActive }: Props) {
         <div className="flex flex-col w-full gap-y-4">
           <button
             onClick={onCreateAccount}
-            className="flex items-center justify-center w-full py-2 bg-secondary text-sm text-white rounded-full opacity-0 animate-fadeIn"
+            className="flex items-center justify-center w-full py-2 bg-secondary text-sm text-white rounded-12 opacity-0 animate-fadeIn"
             style={{ animationDelay: '2.0s' }}>
             계정 생성하기
           </button>
-          <Link pathname="/import-wallet" className="underline text-gray-600">
-            <div className="underline text-gray-600 animate-fadeIn opacity-0" style={{ animationDelay: '2.5s' }}>
-              기존 계정으로 로그인하기
-            </div>
-          </Link>
+          {/*<Link pathname="/import-wallet" className="underline text-gray-600">*/}
+          {/*  <div className="underline text-gray-600 animate-fadeIn opacity-0" style={{ animationDelay: '2.5s' }}>*/}
+          {/*    기존 계정으로 로그인하기*/}
+          {/*  </div>*/}
+          {/*</Link>*/}
         </div>
       </form>
     </section>
