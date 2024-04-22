@@ -3,6 +3,8 @@ import { cls } from '@root/utils/util';
 import { sendMessageToBackgroundAsync } from '@src/chrome/message';
 import { useLoading } from '@src/stores/useLoading';
 import { useAuth } from '@src/stores/useAuth';
+import Toast from '@pages/popup/components/Toast';
+import { useToast } from '@src/stores/useToast';
 
 const createAccount = async (id: string) => {
   console.log('create account');
@@ -26,6 +28,8 @@ export default function CreateAccountSection({ onNextStep, isActive }: Props) {
   const accountIdRef = useRef<HTMLInputElement>();
   const [isAvailable, setIsAvailable] = useState(true);
   const { setLoading } = useLoading();
+  const { openToast } = useToast();
+
   const { auth, setAccount } = useAuth();
 
   const onCreateAccount = async (e: FormEvent) => {
@@ -46,7 +50,8 @@ export default function CreateAccountSection({ onNextStep, isActive }: Props) {
       onNextStep();
     } catch (e) {
       console.error(e);
-      alert('계정 이름이 중복되었습니다! 다른 이름을 입력해주세요.');
+      // alert('계정 이름이 중복되었습니다! 다른 이름을 입력해주세요.');
+      openToast('계정 이름이 중복되었습니다! 다른 이름을 입력해주세요.', 'error');
     }
     setLoading(false);
   };

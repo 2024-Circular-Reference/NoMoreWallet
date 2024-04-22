@@ -10,6 +10,7 @@ import ImportWalletSection from '@root/src/pages/popup/app/import-wallet/index';
 import HomeSection from '@root/src/pages/popup/app/home/index';
 import TestSection from './app/test';
 import LoadingModal from './components/LoadingModal';
+import Toast from '@pages/popup/components/Toast';
 
 function Popup() {
   const { pathname } = useRouter();
@@ -23,6 +24,7 @@ function Popup() {
       {pathname === '/home' && <HomeSection />}
       {pathname === '/test' && <TestSection />}
       <LoadingModal />
+      <Toast />
     </MainLayout>
   );
 }
