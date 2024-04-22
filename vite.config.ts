@@ -25,82 +25,93 @@ const enableHmrInBackgroundScript = true;
 const cacheInvalidationKeyRef = { current: generateKey() };
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@root': rootDir,
-      '@src': srcDir,
-      '@assets': assetsDir,
-      '@pages': pagesDir,
-    },
-  },
-  plugins: [
-    makeManifest({
-      getCacheInvalidationKey,
-    }),
-    react(),
-    customDynamicImport(),
-    addHmr({ background: enableHmrInBackgroundScript, view: true }),
-    isDev && watchRebuild({ afterWriteBundle: regenerateCacheInvalidationKey }),
-    inlineVitePreloadScript(),
-    nodePolyfills({
-      globals: {
-        process: true,
-        Buffer: true,
-        global: true,
-      },
-    }),
-    vitePluginWasmPack(['zkp_circuit']),
-  ],
-  publicDir,
-  build: {
-    outDir,
-    /** Can slow down build speed. */
-    // sourcemap: isDev,
-    minify: isProduction,
-    modulePreload: true,
-    reportCompressedSize: isProduction,
-    emptyOutDir: !isDev,
-    rollupOptions: {
-      input: {
-        devtools: resolve(pagesDir, 'devtools', 'index.html'),
-        panel: resolve(pagesDir, 'panel', 'index.html'),
-        contentInjected: resolve(pagesDir, 'content', 'injected', 'index.ts'),
-        contentUI: resolve(pagesDir, 'content', 'ui', 'index.ts'),
-        background: resolve(pagesDir, 'background', 'index.ts'),
-        contentStyle: resolve(pagesDir, 'content', 'style.scss'),
-        popup: resolve(pagesDir, 'popup', 'index.html'),
-        options: resolve(pagesDir, 'options', 'index.html'),
-        sidepanel: resolve(pagesDir, 'sidepanel', 'index.html'),
-      },
-      output: {
-        entryFileNames: 'src/pages/[name]/index.js',
-        chunkFileNames: isDev ? 'assets/js/[name].js' : 'assets/js/[name].[hash].js',
-        assetFileNames: assetInfo => {
-          const { name } = path.parse(assetInfo.name);
-          const assetFileName = name === 'contentStyle' ? `${name}${getCacheInvalidationKey()}` : name;
-          return `assets/[ext]/${assetFileName}.chunk.[ext]`;
+    resolve: {
+        alias: {
+            '@root': rootDir,
+            '@src': srcDir,
+            '@assets': assetsDir,
+            '@pages': pagesDir,
         },
-      },
     },
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    include: ['**/*.test.ts', '**/*.test.tsx'],
-    setupFiles: './test-utils/vitest.setup.js',
-  },
-  logLevel: 'info',
-  experimental: {},
+    plugins: [
+        makeManifest({
+            getCacheInvalidationKey,
+        }),
+        react(),
+        customDynamicImport(),
+        addHmr({ background: enableHmrInBackgroundScript, view: true }),
+        isDev &&
+            watchRebuild({ afterWriteBundle: regenerateCacheInvalidationKey }),
+        inlineVitePreloadScript(),
+        nodePolyfills({
+            globals: {
+                process: true,
+                Buffer: true,
+                global: true,
+            },
+        }),
+        vitePluginWasmPack(['zkp_circuit']),
+    ],
+    publicDir,
+    build: {
+        outDir,
+        /** Can slow down build speed. */
+        // sourcemap: isDev,
+        minify: isProduction,
+        modulePreload: true,
+        reportCompressedSize: isProduction,
+        emptyOutDir: !isDev,
+        rollupOptions: {
+            input: {
+                devtools: resolve(pagesDir, 'devtools', 'index.html'),
+                panel: resolve(pagesDir, 'panel', 'index.html'),
+                contentInjected: resolve(
+                    pagesDir,
+                    'content',
+                    'injected',
+                    'index.ts'
+                ),
+                contentUI: resolve(pagesDir, 'content', 'ui', 'index.ts'),
+                background: resolve(pagesDir, 'background', 'index.ts'),
+                contentStyle: resolve(pagesDir, 'content', 'style.scss'),
+                popup: resolve(pagesDir, 'popup', 'index.html'),
+                options: resolve(pagesDir, 'options', 'index.html'),
+                sidepanel: resolve(pagesDir, 'sidepanel', 'index.html'),
+            },
+            output: {
+                entryFileNames: 'src/pages/[name]/index.js',
+                chunkFileNames: isDev
+                    ? 'assets/js/[name].js'
+                    : 'assets/js/[name].[hash].js',
+                assetFileNames: (assetInfo) => {
+                    const { name } = path.parse(assetInfo.name);
+                    const assetFileName =
+                        name === 'contentStyle'
+                            ? `${name}${getCacheInvalidationKey()}`
+                            : name;
+                    return `assets/[ext]/${assetFileName}.chunk.[ext]`;
+                },
+            },
+        },
+    },
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        include: ['**/*.test.ts', '**/*.test.tsx'],
+        setupFiles: './test-utils/vitest.setup.js',
+    },
+    logLevel: 'info',
+    experimental: {},
 });
 
 function getCacheInvalidationKey() {
-  return cacheInvalidationKeyRef.current;
+    return cacheInvalidationKeyRef.current;
 }
 function regenerateCacheInvalidationKey() {
-  cacheInvalidationKeyRef.current = generateKey();
-  return cacheInvalidationKeyRef;
+    cacheInvalidationKeyRef.current = generateKey();
+    return cacheInvalidationKeyRef;
 }
 
 function generateKey(): string {
-  return `${Date.now().toFixed()}`;
+    return `${Date.now().toFixed()}`;
 }

@@ -1,10 +1,10 @@
 {
-  "extensionDescription": {
-    "description": "블록체인과 ZKP 기술로 당신의 정보를 안전하게 보호합니다.",
-    "message": "더 이상 당신의 정보를 제공하지 않아도 됩니다. 블록체인과 ZKP 기술로 당신의 정보를 안전하게 보호합니다."
-  },
-  "extensionName": {
-    "description": "더 이상 당신의 정보를 제공하지 않아도 됩니다. 블록체인과 ZKP 기술로 당신의 정보를 안전하게 보호합니다.",
-    "message": "No More Wallet"
-  }
+    "extensionDescription": {
+        "description": "블록체인과 ZKP 기술로 당신의 정보를 안전하게 보호합니다.",
+        "message": "더 이상 당신의 정보를 제공하지 않아도 됩니다. 블록체인과 ZKP 기술로 당신의 정보를 안전하게 보호합니다."
+    },
+    "extensionName": {
+        "description": "더 이상 당신의 정보를 제공하지 않아도 됩니다. 블록체인과 ZKP 기술로 당신의 정보를 안전하게 보호합니다.",
+        "message": "No More Wallet"
+    }
 }

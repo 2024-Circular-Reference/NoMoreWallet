@@ -3,17 +3,23 @@ import Portal from './Portal';
 import { BounceLoader } from 'react-spinners';
 
 const LoadingModal = () => {
-  const isLoading = useLoading(state => state.isLoading);
+    const isLoading = useLoading((state) => state.isLoading);
 
-  if (!isLoading) {
-    return null;
-  }
+    if (!isLoading) {
+        return null;
+    }
 
-  return (
-    <Portal>
-      <BounceLoader color="#3B5F6E" loading={isLoading} size={50} aria-label="Loading Spinner" data-testid="loader" />
-    </Portal>
-  );
+    return (
+        <Portal>
+            <BounceLoader
+                color="#3B5F6E"
+                loading={isLoading}
+                size={50}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+            />
+        </Portal>
+    );
 };
 
 export default LoadingModal;

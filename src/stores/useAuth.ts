@@ -2,69 +2,71 @@ import { create } from 'zustand';
 import { UserAccount } from '@src/types/wallet';
 
 interface IUserInfo {
-  email: string;
-  studentId: string;
+    email: string;
+    studentId: string;
 }
 
 interface IDid {
-  vc: any;
-  vp: any;
-  issuerPublicKey: string;
+    vc: any;
+    vp: any;
+    issuerPublicKey: string;
 }
 
 interface IAuth {
-  account: UserAccount | null;
-  userInfo: IUserInfo;
-  did: IDid;
-  proof: string;
+    account: UserAccount | null;
+    userInfo: IUserInfo;
+    did: IDid;
+    proof: string;
 }
 
 interface IAuthState {
-  auth: IAuth;
-  setAccount: (account: UserAccount) => void;
-  setUserInfo: (userInfo: IUserInfo) => void;
-  setDid: (did: IDid) => void;
-  setProof: (proof: string) => void;
-  clearAuth: () => void;
+    auth: IAuth;
+    setAccount: (account: UserAccount) => void;
+    setUserInfo: (userInfo: IUserInfo) => void;
+    setDid: (did: IDid) => void;
+    setProof: (proof: string) => void;
+    clearAuth: () => void;
 }
 
-export const useAuth = create<IAuthState>(set => ({
-  auth: {
-    account: {
-      seedPhrase: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_SEED_PHRASE,
-      publicKey: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_PUBLIC_KEY,
-      secretKey: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_SECRET_KEY,
-      accountId: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_ID,
-    } as UserAccount,
-    userInfo: {
-      email: '',
-      studentId: '',
-    },
-    did: {
-      vc: '',
-      vp: '',
-      issuerPublicKey: '',
-    },
-    proof: '',
-  },
-  setAccount: account => set(state => ({ auth: { ...state.auth, account } })),
-  setUserInfo: userInfo => set(state => ({ auth: { ...state.auth, userInfo } })),
-  setDid: did => set(state => ({ auth: { ...state.auth, did } })),
-  setProof: proof => set(state => ({ auth: { ...state.auth, proof } })),
-  clearAuth: () =>
-    set({
-      auth: {
-        account: null,
+export const useAuth = create<IAuthState>((set) => ({
+    auth: {
+        account: {
+            seedPhrase: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_SEED_PHRASE,
+            publicKey: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_PUBLIC_KEY,
+            secretKey: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_SECRET_KEY,
+            accountId: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_ID,
+        } as UserAccount,
         userInfo: {
-          email: '',
-          studentId: '',
+            email: '',
+            studentId: '',
         },
         did: {
-          vc: '',
-          vp: '',
-          issuerPublicKey: '',
+            vc: '',
+            vp: '',
+            issuerPublicKey: '',
         },
         proof: '',
-      },
-    }),
+    },
+    setAccount: (account) =>
+        set((state) => ({ auth: { ...state.auth, account } })),
+    setUserInfo: (userInfo) =>
+        set((state) => ({ auth: { ...state.auth, userInfo } })),
+    setDid: (did) => set((state) => ({ auth: { ...state.auth, did } })),
+    setProof: (proof) => set((state) => ({ auth: { ...state.auth, proof } })),
+    clearAuth: () =>
+        set({
+            auth: {
+                account: null,
+                userInfo: {
+                    email: '',
+                    studentId: '',
+                },
+                did: {
+                    vc: '',
+                    vp: '',
+                    issuerPublicKey: '',
+                },
+                proof: '',
+            },
+        }),
 }));

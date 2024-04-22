@@ -13,20 +13,23 @@ import LoadingModal from './components/LoadingModal';
 import Toast from '@pages/popup/components/Toast';
 
 function Popup() {
-  const { pathname } = useRouter();
+    const { pathname } = useRouter();
 
-  return (
-    <MainLayout>
-      {pathname === '/' && <InitSection />}
-      {pathname === '/login-wallet' && <LoginWalletSection />}
-      {pathname === '/create-wallet' && <CreateWalletSection />}
-      {pathname === '/import-wallet' && <ImportWalletSection />}
-      {pathname === '/home' && <HomeSection />}
-      {pathname === '/test' && <TestSection />}
-      <LoadingModal />
-      <Toast />
-    </MainLayout>
-  );
+    return (
+        <MainLayout>
+            {pathname === '/' && <InitSection />}
+            {pathname === '/login-wallet' && <LoginWalletSection />}
+            {pathname === '/create-wallet' && <CreateWalletSection />}
+            {pathname === '/import-wallet' && <ImportWalletSection />}
+            {pathname === '/home' && <HomeSection />}
+            {pathname === '/test' && <TestSection />}
+            <LoadingModal />
+            <Toast />
+        </MainLayout>
+    );
 }
 
-export default withErrorBoundary(withSuspense(Popup, <div> Loading ... </div>), <div> Error Occur </div>);
+export default withErrorBoundary(
+    withSuspense(Popup, <div> Loading ... </div>),
+    <div> Error Occur </div>
+);
