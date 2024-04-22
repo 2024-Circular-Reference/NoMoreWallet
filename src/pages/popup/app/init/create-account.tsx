@@ -48,17 +48,17 @@ export default function CreateAccountSection({ onNextStep, isActive }: Props) {
   return (
     <section
       className={cls('flex-none flex flex-col items-center px-24 w-screen h-screen', isActive ? 'block' : 'hidden')}>
-      <div>
-        <p className="text-20 font-bold mt-96 text-center">당신을 증명할</p>
+      <div className="animate-fadeIn opacity-0" style={{ animationDelay: '0.5s' }}>
+        <p className="text-20 font-bold mt-96 text-center">1. 당신을 증명할</p>
         <p className="text-20 font-bold text-center">계정을 생성해보세요!</p>
       </div>
-      <form className="flex flex-col gap-y-4 animate-fadeIn opacity-0 mt-96">
+      <form className="flex flex-col gap-y-12 animate-fadeIn opacity-0 mt-48">
         <div
           className={cls(
             'relative text-base flex items-center animate-fadeIn opacity-0',
             isAvailable ? 'border-slate-400' : 'border-red-500',
           )}
-          style={{ animationDelay: '1.0s' }}>
+          style={{ animationDelay: '1.5s' }}>
           <input
             ref={accountIdRef}
             defaultValue={auth.account?.accountId}
@@ -76,7 +76,7 @@ export default function CreateAccountSection({ onNextStep, isActive }: Props) {
             계정 생성하기
           </button>
           <Link pathname="/import-wallet" className="underline text-gray-600">
-            <div className="underline text-gray-600 animate-fadeIn opacity-0" style={{ animationDelay: '3.0s' }}>
+            <div className="underline text-gray-600 animate-fadeIn opacity-0" style={{ animationDelay: '2.5s' }}>
               기존 계정으로 로그인하기
             </div>
           </Link>

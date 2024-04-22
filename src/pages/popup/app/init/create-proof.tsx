@@ -66,47 +66,60 @@ export default function CreateProofSection({ isActive }: { isActive: boolean }) 
   return (
     <section
       className={cls(
-        'flex-none flex flex-col w-screen min-h-screen items-center justify-center gap-y-48 overflow-scroll',
+        'flex-none flex flex-col w-screen min-h-screen items-center justify-center gap-y-24',
         isActive ? 'block' : 'hidden',
       )}>
-      <div>
-        <p className="text-20 font-bold mt-24 text-center">학교에서 발급받은 인증서로</p>
+      <div className="animate-fadeIn opacity-0" style={{ animationDelay: '0.5s' }}>
+        <p className="text-20 font-bold mt-24 text-center">2. 학교에서 발급받은 인증서로</p>
         <p className="text-20 font-bold text-center">당신만의 증명을 생성해보세요!</p>
       </div>
-      <form onSubmit={onCreateVC} className="flex flex-col items-center jusfity-center gap-y-8 w-full px-24">
-        <div className="flex w-full">
+      <form onSubmit={onCreateVC} className="flex flex-col items-center jusfity-center gap-y-8 w-full px-24 mt-24">
+        <div className="flex w-full animate-fadeIn opacity-0" style={{ animationDelay: '1.5s' }}>
           <p>인증기관</p>
-          <select className="p-2 border border-gray-300 rounded-md mb-4 ml-auto">
+          <select className="p-2 border border-gray-300 rounded-8 mb-4 ml-auto w-168">
             <option value="near">부산대학교</option>
             <option value="klaytn">동아대학교</option>
           </select>
         </div>
-        <div className="flex w-full items-center justify-center">
+        <div
+          className="flex w-full items-center justify-center animate-fadeIn opacity-0"
+          style={{ animationDelay: '2.0s' }}>
           <p>이메일</p>
           <input
             type="email"
             placeholder="학과 이메일"
-            className="px-4 border border-gray-300 rounded-l-md ml-auto focus:outline-none"
+            className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
             ref={emailRef}
           />
           <button className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400">인증</button>
         </div>
-        <div className="flex w-full">
+        <div className="flex w-full animate-fadeIn opacity-0" style={{ animationDelay: '2.5s' }}>
           <label>계정 ID</label>
           <p className="ml-auto">{auth.account?.accountId}.testnet</p>
         </div>
-        <button className="w-full h-32 bg-secondary text-white rounded-12 ">Proof 생성</button>
+        <button
+          className="w-full h-32 bg-secondary text-white rounded-12 mt-12 animate-fadeIn opacity-0"
+          style={{ animationDelay: '3.0s' }}>
+          Proof 생성
+        </button>
       </form>
-      <div id="proof-view" className="flex flex-col gap-y-4 w-full px-24 mt-24">
+      <hr
+        className="w-[calc(100%-16px)] animate-fadeIn opacity-0 bg-secondary h-2 mt-24"
+        style={{ animationDelay: '4.0s' }}
+      />
+      <div
+        id="proof-view"
+        className="flex flex-col gap-y-4 w-full px-24 animate-fadeIn opacity-0"
+        style={{ animationDelay: '4.5s' }}>
         <div className="flex w-full">
           <label>VC</label>
-          <textarea disabled={true} className="ml-auto w-1/2 focus:outline-none rounded-8 bg-white">
+          <textarea disabled={true} className="ml-auto w-168 h-20 focus:outline-none bg-white border border-gray-300">
             {auth.did?.vc}
           </textarea>
         </div>
         <div className="flex w-full">
           <label>ZK-Proof</label>
-          <textarea disabled={true} className="ml-auto w-1/2 focus:outline-none rounded-8 bg-white">
+          <textarea disabled={true} className="ml-auto w-168 h-20 focus:outline-none bg-white border border-gray-300">
             {auth.proof}
           </textarea>
         </div>
