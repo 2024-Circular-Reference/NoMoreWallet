@@ -7,7 +7,7 @@ import LandingSection from '@pages/popup/app/init/landing';
 const TOTAL_STEP = 4;
 
 export default function InitSection() {
-    const [step, setStep] = useState(2);
+    const [step, setStep] = useState(0);
 
     const handleNext = () => {
         setStep((prevStep) => Math.min(prevStep + 1, TOTAL_STEP - 1));

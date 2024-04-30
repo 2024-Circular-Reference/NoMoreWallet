@@ -1,11 +1,12 @@
-import { FormEvent, useRef } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { useAuth } from '@src/stores/useAuth';
 import axios from '@pages/lib/utils/axios';
 import { useLoading } from '@src/stores/useLoading';
-import init, { wasm_test } from 'zkp_circuit';
 import { cls } from '@root/utils/util';
 import { useToast } from '@src/stores/useToast';
 import { useVerifyEmail } from '@root/src/stores/useVerifyEmail';
+import useZkProof from '@src/hooks/useZkProof';
+import { useJwt } from 'react-jwt';
 
 export default function CreateProofSection({
     isActive,
@@ -15,9 +16,12 @@ export default function CreateProofSection({
     const { auth, setDid, setProof } = useAuth();
     const { setLoading } = useLoading();
     const emailRef = useRef<HTMLInputElement>();
+    const verifyCodeRef = useRef<HTMLInputElement>();
     const studentIdRef = useRef<HTMLInputElement>();
     const { openToast } = useToast();
-    const { setVerifingCode } = useVerifyEmail();
+    const { verifingCode, setVerifingCode, setVerified, isVerified } =
+        useVerifyEmail();
+    const [isWatingForVerify, setIsWatingForVerify] = useState(false);
 
     const onCreateVC = async (e: FormEvent) => {
         e.preventDefault();
@@ -46,10 +50,8 @@ export default function CreateProofSection({
                     },
                     issuerPublicKey: res.data.data.issuerPubKey,
                 });
-                alert(
-                    'DID 생성이 완료되었습니다. Proof를 생성하겠습니다. 15분 정도의 시간이 소요되오니 앱을 닫고 기다려주세요.'
-                );
-                // onWasmTest();
+                alert('DID 생성이 완료되었습니다. Proof를 생성합니다.');
+                onCreateProof();
             } else {
                 throw new Error('failed create vc' + res);
             }
@@ -60,18 +62,19 @@ export default function CreateProofSection({
         setLoading(false);
     };
 
-    const onWasmTest = async () => {
-        let res = 0;
-        init().then(() => {
-            console.log('init wasm');
-            res = wasm_test();
-            console.log(res);
-            setProof(res.toString());
-            alert('Proof 생성이 완료되었습니다. 다음 단계로 이동하겠습니다!');
-        });
+    const { generateZkProof } = useZkProof({
+        vcNumberString: auth.did?.vc,
+        nearPrivateKeyString: auth.account?.secretKey,
+    });
+
+    const onCreateProof = async () => {
+        console.log('onCreateProof');
+        const res = await generateZkProof();
+        console.log(res);
+        setProof(res.proof.toString());
     };
 
-    const onVerifyEmail = async () => {
+    const onSendVerifyCode = async () => {
         const email = emailRef.current.value;
         try {
             const res = await axios({
@@ -83,11 +86,10 @@ export default function CreateProofSection({
             });
             console.log(res);
             if (res.data.statusCode === 200) {
-                openToast(
-                    `이메일 인증이 완료되었습니다. ${res.data.data.token}`,
-                    'success'
-                );
+                openToast(`이메일 인증이 완료되었습니다.`, 'success');
+                console.log(res.data.data.token);
                 setVerifingCode(res.data.data.token);
+                setIsWatingForVerify(true);
             } else {
                 throw new Error('failed verify email' + res);
             }
@@ -97,6 +99,27 @@ export default function CreateProofSection({
                 '이메일 인증에 실패했습니다. 다시 시도해주세요.',
                 'error'
             );
+        }
+    };
+
+    const { decodedToken } = useJwt(verifingCode);
+
+    const onVerifyEmail = async () => {
+        if (verifyCodeRef.current.value === '') {
+            openToast('인증코드를 입력해주세요.', 'error');
+            return;
+        }
+
+        const verifyCode = verifyCodeRef.current.value;
+        console.log(decodedToken);
+
+        if (verifyCode !== decodedToken.code) {
+            openToast('인증코드가 일치하지 않습니다.', 'error');
+            setVerified(false);
+            return;
+        } else {
+            openToast('인증이 완료되었습니다.', 'success');
+            setVerified(true);
         }
     };
 
@@ -142,6 +165,24 @@ export default function CreateProofSection({
                     />
                     <button
                         className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400"
+                        onClick={onSendVerifyCode}
+                    >
+                        {isWatingForVerify ? '재전송' : '인증코드 전송'}
+                    </button>
+                </div>
+                <div
+                    className="flex w-full items-center justify-center animate-fadeIn opacity-0"
+                    style={{ animationDelay: '2.0s' }}
+                >
+                    <p>인증코드</p>
+                    <input
+                        type="text"
+                        placeholder="인증코드 입력"
+                        className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
+                        ref={verifyCodeRef}
+                    />
+                    <button
+                        className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400"
                         onClick={onVerifyEmail}
                     >
                         인증
@@ -155,9 +196,10 @@ export default function CreateProofSection({
                     <p className="ml-auto">{auth.account?.accountId}.testnet</p>
                 </div>
                 <button
-                    className="w-full h-32 bg-secondary text-white rounded-12 mt-12 animate-fadeIn opacity-0"
+                    className="w-full h-32 bg-secondary text-white rounded-12 mt-12 animate-fadeIn opacity-0 disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed"
                     style={{ animationDelay: '3.0s' }}
                     onClick={onCreateVC}
+                    disabled={!isVerified}
                 >
                     Proof 생성
                 </button>
