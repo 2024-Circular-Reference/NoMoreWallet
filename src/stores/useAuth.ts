@@ -7,7 +7,7 @@ interface IUserInfo {
 }
 
 interface IDid {
-    vc: any;
+    vc: object;
     vp: any;
     issuerPublicKey: string;
 }
@@ -16,7 +16,7 @@ interface IAuth {
     account: UserAccount | null;
     userInfo: IUserInfo;
     did: IDid;
-    proof: string;
+    proof: object;
 }
 
 interface IAuthState {
@@ -24,7 +24,7 @@ interface IAuthState {
     setAccount: (account: UserAccount) => void;
     setUserInfo: (userInfo: IUserInfo) => void;
     setDid: (did: IDid) => void;
-    setProof: (proof: string) => void;
+    setProof: (proof: object) => void;
     clearAuth: () => void;
 }
 
@@ -41,11 +41,11 @@ export const useAuth = create<IAuthState>((set) => ({
             studentId: '',
         },
         did: {
-            vc: '',
+            vc: {},
             vp: '',
             issuerPublicKey: '',
         },
-        proof: '',
+        proof: {},
     },
     setAccount: (account) =>
         set((state) => ({ auth: { ...state.auth, account } })),
@@ -62,11 +62,11 @@ export const useAuth = create<IAuthState>((set) => ({
                     studentId: '',
                 },
                 did: {
-                    vc: '',
+                    vc: {},
                     vp: '',
                     issuerPublicKey: '',
                 },
-                proof: '',
+                proof: {},
             },
         }),
 }));

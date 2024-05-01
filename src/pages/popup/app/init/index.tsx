@@ -7,7 +7,7 @@ import LandingSection from '@pages/popup/app/init/landing';
 const TOTAL_STEP = 4;
 
 export default function InitSection() {
-    const [step, setStep] = useState(0);
+    const [step, setStep] = useState(3);
 
     const handleNext = () => {
         setStep((prevStep) => Math.min(prevStep + 1, TOTAL_STEP - 1));
@@ -32,7 +32,10 @@ export default function InitSection() {
                         onNextStep={handleNext}
                         isActive={step === 1}
                     />
-                    <CreateProofSection isActive={step === 2} />
+                    <CreateProofSection
+                        onNextStep={handleNext}
+                        isActive={step === 2}
+                    />
                     <VerifyProofSection isActive={step === 3} />
                 </div>
             </div>

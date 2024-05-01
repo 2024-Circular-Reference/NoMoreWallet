@@ -1,12 +1,15 @@
 import { sendMessageToContentScript } from '@src/chrome/message';
 import { Message } from '@src/types/message';
 import { cls } from '@root/utils/util';
+import { useAuth } from '@src/stores/useAuth';
+import { useViewModalStore } from '@src/stores/useViewModal';
 
 export default function VerifyProofSection({
     isActive,
 }: {
     isActive: boolean;
 }) {
+    const { auth } = useAuth((state) => state);
     const onClick = () => {
         sendMessageToContentScript(
             Message.FROM_EXTENSION_TO_PAGE,
@@ -41,12 +44,7 @@ export default function VerifyProofSection({
                         <option>블라인드</option>
                     </select>
                 </div>
-                <p
-                    className="w-full h-32 animate-fadeIn opacity-0"
-                    style={{ animationDelay: '2.0s' }}
-                >
-                    증명서
-                </p>
+                <ProofViewContainer vc={auth.did.vc} proof={auth.proof} />
             </div>
             <div
                 className="w-full animate-springAlways"
@@ -61,5 +59,40 @@ export default function VerifyProofSection({
                 </button>
             </div>
         </section>
+    );
+}
+
+function ProofViewContainer({ vc, proof }: { vc: object; proof: object }) {
+    const { openModal } = useViewModalStore((state) => state);
+
+    const onShowVc = () => {
+        console.log(vc);
+        openModal({ label: 'VC', value: vc });
+    };
+
+    const onShowProof = () => {
+        console.log(proof);
+        openModal({ label: 'ZK-Proof', value: proof });
+    };
+
+    return (
+        <div
+            id="proof-view"
+            className="flex flex-col gap-y-4 w-full animate-fadeIn opacity-0"
+            style={{ animationDelay: '2.0s' }}
+        >
+            <div className="flex w-full">
+                <label>VC</label>
+                <button className="ml-auto" onClick={onShowVc}>
+                    보기
+                </button>
+            </div>
+            <div className="flex w-full">
+                <label>ZK-Proof</label>
+                <button className="ml-auto" onClick={onShowProof}>
+                    보기
+                </button>
+            </div>
+        </div>
     );
 }

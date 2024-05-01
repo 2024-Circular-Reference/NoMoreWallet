@@ -2,7 +2,7 @@ import { useLoading } from '@root/src/stores/useLoading';
 import Portal from './Portal';
 import { BounceLoader } from 'react-spinners';
 
-const LoadingModal = () => {
+export default function LoadingModal() {
     const isLoading = useLoading((state) => state.isLoading);
 
     if (!isLoading) {
@@ -20,6 +20,4 @@ const LoadingModal = () => {
             />
         </Portal>
     );
-};
-
-export default LoadingModal;
+}

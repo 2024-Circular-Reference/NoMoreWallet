@@ -3,8 +3,10 @@ import { MutableRefObject } from 'react';
 import useCreateProof from '@pages/popup/app/_hook/useCreateProof';
 
 export default function CreateProofSection({
+    onNextStep,
     isActive,
 }: {
+    onNextStep: () => void;
     isActive: boolean;
 }) {
     const {
@@ -51,6 +53,7 @@ export default function CreateProofSection({
                 <VerifyEmailSection
                     emailRef={emailRef}
                     verifyCodeRef={verifyCodeRef}
+                    isVerified={isVerified}
                     isWaitingForVerify={isWaitingForVerify}
                     onVerifyEmail={onVerifyEmail}
                     onSendVerifyCode={onSendVerifyCode}
@@ -65,20 +68,17 @@ export default function CreateProofSection({
                 <button
                     className="w-full h-32 bg-secondary text-white rounded-12 mt-12 animate-fadeIn opacity-0 disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed"
                     style={{ animationDelay: '3.0s' }}
-                    onClick={onCreateVcAndProof}
+                    onClick={(e) => {
+                        if (isVerified) {
+                            onCreateVcAndProof(e);
+                            onNextStep();
+                        }
+                    }}
                     disabled={!isVerified}
                 >
                     Proof 생성
                 </button>
             </div>
-            <hr
-                className="w-[calc(100%-16px)] animate-fadeIn opacity-0 bg-secondary h-2 mt-24"
-                style={{ animationDelay: '4.0s' }}
-            />
-            <ProofViewContainer
-                stringifyVc={auth?.did.vc}
-                stringifyProof={auth.proof}
-            />
         </section>
     );
 }
@@ -86,12 +86,14 @@ export default function CreateProofSection({
 function VerifyEmailSection({
     emailRef,
     verifyCodeRef,
+    isVerified,
     isWaitingForVerify,
     onVerifyEmail,
     onSendVerifyCode,
 }: {
     emailRef: MutableRefObject<HTMLInputElement>;
     verifyCodeRef: MutableRefObject<HTMLInputElement>;
+    isVerified: boolean;
     isWaitingForVerify: boolean;
     onVerifyEmail: () => void;
     onSendVerifyCode: () => void;
@@ -128,45 +130,16 @@ function VerifyEmailSection({
                     ref={verifyCodeRef}
                 />
                 <button
-                    className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400"
+                    className={cls(
+                        'bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400',
+                        'disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50'
+                    )}
                     onClick={onVerifyEmail}
+                    disabled={isVerified}
                 >
                     인증
                 </button>
             </div>
         </>
-    );
-}
-
-function ProofViewContainer({
-    stringifyVc,
-    stringifyProof,
-}: {
-    stringifyVc: string;
-    stringifyProof: string;
-}) {
-    return (
-        <div
-            id="proof-view"
-            className="flex flex-col gap-y-4 w-full px-24 animate-fadeIn opacity-0"
-            style={{ animationDelay: '4.5s' }}
-        >
-            <div className="flex w-full">
-                <label>VC</label>
-                <textarea
-                    disabled={true}
-                    className="ml-auto w-168 h-20 focus:outline-none bg-white border border-gray-300"
-                    value={stringifyVc}
-                />
-            </div>
-            <div className="flex w-full">
-                <label>ZK-Proof</label>
-                <textarea
-                    disabled={true}
-                    className="ml-auto w-168 h-20 focus:outline-none bg-white border border-gray-300"
-                    value={stringifyProof}
-                />
-            </div>
-        </div>
     );
 }

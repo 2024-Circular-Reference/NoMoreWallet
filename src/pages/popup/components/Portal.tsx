@@ -12,7 +12,6 @@ export default function Portal({ children }: { children: React.ReactNode }) {
             }}
         >
             {children}
-            <p className="font-bold text-white">Loading...</p>
         </div>,
         document.getElementById('modal-root')
     );
