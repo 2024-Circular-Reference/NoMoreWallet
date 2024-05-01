@@ -18,8 +18,7 @@ export default function useCreateProof() {
         useVerifyEmail();
 
     const [isWaitingForVerify, setIsWaitingForVerify] = useState(false);
-    const onCreateVcAndProof = async (e: FormEvent) => {
-        e.preventDefault();
+    const onCreateVcAndProof = async (): Promise<boolean> => {
         setLoading(true);
         const email = emailRef.current.value;
         console.log(email, auth.account?.publicKey);
@@ -44,24 +43,24 @@ export default function useCreateProof() {
                     },
                     issuerPublicKey: res.data.data.issuerPubKey,
                 });
-                console.log(JSON.parse(res.data.data.vc));
-                openToast(
-                    'DID 생성이 완료되었습니다. Proof를 생성합니다.',
-                    'success'
-                );
-                await onCreateProof('1234567890');
+                console.log(res.data.data);
+                console.log('DID 생성이 완료되었습니다. Proof를 생성합니다.');
+                const vcNumber = res.data.data.message;
+                await onCreateProof(vcNumber);
             } else {
                 throw new Error('failed create vc' + res);
             }
         } catch (e) {
             console.error(e);
             openToast('DID 생성에 실패했습니다. 다시 시도해주세요.', 'error');
+            setLoading(false);
+            return false;
         }
         setLoading(false);
+        return true;
     };
 
     const onCreateProof = async (vcNumber: string) => {
-        console.log('onCreateProof');
         console.log('Vc No: ', vcNumber);
         const res = await generateZkProof(vcNumber, auth.account.secretKey);
         console.log(res.proof);

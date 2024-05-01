@@ -20,6 +20,16 @@ export default function CreateProofSection({
         onVerifyEmail,
     } = useCreateProof();
 
+    const onClick = async (e) => {
+        e.preventDefault();
+        if (isVerified) {
+            const res = await onCreateVcAndProof();
+            if (res) {
+                onNextStep();
+            }
+        }
+    };
+
     return (
         <section
             className={cls(
@@ -68,12 +78,7 @@ export default function CreateProofSection({
                 <button
                     className="w-full h-32 bg-secondary text-white rounded-12 mt-12 animate-fadeIn opacity-0 disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed"
                     style={{ animationDelay: '3.0s' }}
-                    onClick={(e) => {
-                        if (isVerified) {
-                            onCreateVcAndProof(e);
-                            onNextStep();
-                        }
-                    }}
+                    onClick={onClick}
                     disabled={!isVerified}
                 >
                     Proof 생성

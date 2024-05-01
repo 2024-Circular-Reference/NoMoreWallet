@@ -22,8 +22,9 @@ export default function useZkProof() {
         const babyJub = await buildBabyjub();
         console.log(vcNumberString, nearPrivateKeyString);
         // VC_no_1337
-        const msg = Buffer.from(padLeftTo64(vcNumberString, '0'), 'hex');
-        console.log('msgwithpad : ', padLeftTo32(vcNumberString, '0'));
+        const msg = '00' + Buffer.from(padLeftTo64(vcNumberString, '0'), 'hex');
+        console.log('padding msg: ', padLeftTo64(vcNumberString, '0'));
+        console.log('padding msg: ', padLeftTo64(vcNumberString, '0').length);
         console.log('msg: ', msg);
         console.log('msg: ', msg.length);
         // NEAR Private Key
