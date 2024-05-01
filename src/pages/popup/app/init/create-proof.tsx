@@ -1,127 +1,22 @@
-import { FormEvent, useRef, useState } from 'react';
-import { useAuth } from '@src/stores/useAuth';
-import axios from '@pages/lib/utils/axios';
-import { useLoading } from '@src/stores/useLoading';
 import { cls } from '@root/utils/util';
-import { useToast } from '@src/stores/useToast';
-import { useVerifyEmail } from '@root/src/stores/useVerifyEmail';
-import useZkProof from '@src/hooks/useZkProof';
-import { useJwt } from 'react-jwt';
+import { MutableRefObject } from 'react';
+import useCreateProof from '@pages/popup/app/_hook/useCreateProof';
 
 export default function CreateProofSection({
     isActive,
 }: {
     isActive: boolean;
 }) {
-    const { auth, setDid, setProof } = useAuth();
-    const { setLoading } = useLoading();
-    const emailRef = useRef<HTMLInputElement>();
-    const verifyCodeRef = useRef<HTMLInputElement>();
-    const studentIdRef = useRef<HTMLInputElement>();
-    const { openToast } = useToast();
-    const { verifingCode, setVerifingCode, setVerified, isVerified } =
-        useVerifyEmail();
-    const [isWatingForVerify, setIsWatingForVerify] = useState(false);
-
-    const onCreateVC = async (e: FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        const email = emailRef.current.value;
-        const studentId = studentIdRef.current.value;
-        try {
-            const res = await axios({
-                method: 'get',
-                url: 'http://localhost:8081/api/holder/create-vc',
-                params: {
-                    email,
-                    stNum: studentId,
-                    holderPubKey: auth.account?.publicKey,
-                },
-            });
-            console.log(res);
-            if (res.data.statusCode === 200) {
-                // TODO: 생성된 VC 검증하는 로직 구현
-                setDid({
-                    vc: res.data.data.vc,
-                    vp: {
-                        '@context': ['https://www.w3.org/2018/credentials/v1'],
-                        'type': ['VerifiablePresentation'],
-                        'verifiableCredential': [res.data.data.vc],
-                    },
-                    issuerPublicKey: res.data.data.issuerPubKey,
-                });
-                alert('DID 생성이 완료되었습니다. Proof를 생성합니다.');
-                onCreateProof();
-            } else {
-                throw new Error('failed create vc' + res);
-            }
-        } catch (e) {
-            console.error(e);
-            alert('DID 생성에 실패했습니다. 다시 시도해주세요.');
-        }
-        setLoading(false);
-    };
-
-    const { generateZkProof } = useZkProof({
-        vcNumberString: auth.did?.vc,
-        nearPrivateKeyString: auth.account?.secretKey,
-    });
-
-    const onCreateProof = async () => {
-        console.log('onCreateProof');
-        const res = await generateZkProof();
-        console.log(res);
-        setProof(res.proof.toString());
-    };
-
-    const onSendVerifyCode = async () => {
-        const email = emailRef.current.value;
-        try {
-            const res = await axios({
-                method: 'post',
-                url: 'http://localhost:8081/api/holder/v1/send-email',
-                data: {
-                    email,
-                },
-            });
-            console.log(res);
-            if (res.data.statusCode === 200) {
-                openToast(`이메일 인증이 완료되었습니다.`, 'success');
-                console.log(res.data.data.token);
-                setVerifingCode(res.data.data.token);
-                setIsWatingForVerify(true);
-            } else {
-                throw new Error('failed verify email' + res);
-            }
-        } catch (e) {
-            console.error(e);
-            openToast(
-                '이메일 인증에 실패했습니다. 다시 시도해주세요.',
-                'error'
-            );
-        }
-    };
-
-    const { decodedToken } = useJwt(verifingCode);
-
-    const onVerifyEmail = async () => {
-        if (verifyCodeRef.current.value === '') {
-            openToast('인증코드를 입력해주세요.', 'error');
-            return;
-        }
-
-        const verifyCode = verifyCodeRef.current.value;
-        console.log(decodedToken);
-
-        if (verifyCode !== decodedToken.code) {
-            openToast('인증코드가 일치하지 않습니다.', 'error');
-            setVerified(false);
-            return;
-        } else {
-            openToast('인증이 완료되었습니다.', 'success');
-            setVerified(true);
-        }
-    };
+    const {
+        auth,
+        isVerified,
+        emailRef,
+        verifyCodeRef,
+        isWaitingForVerify,
+        onCreateVcAndProof,
+        onSendVerifyCode,
+        onVerifyEmail,
+    } = useCreateProof();
 
     return (
         <section
@@ -146,48 +41,20 @@ export default function CreateProofSection({
                     className="flex w-full animate-fadeIn opacity-0"
                     style={{ animationDelay: '1.5s' }}
                 >
-                    <p>인증기관</p>
+                    <p>증명 발급 기관</p>
                     <select className="p-2 border border-gray-300 rounded-8 mb-4 ml-auto w-168">
-                        <option value="near">부산대학교</option>
-                        <option value="klaytn">동아대학교</option>
+                        <option value="pnu">부산대학교</option>
+                        <option value="donga">동아대학교</option>
+                        <option value="pknu">부경대학교</option>
                     </select>
                 </div>
-                <div
-                    className="flex w-full items-center justify-center animate-fadeIn opacity-0"
-                    style={{ animationDelay: '2.0s' }}
-                >
-                    <p>이메일</p>
-                    <input
-                        type="email"
-                        placeholder="학과 이메일"
-                        className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
-                        ref={emailRef}
-                    />
-                    <button
-                        className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400"
-                        onClick={onSendVerifyCode}
-                    >
-                        {isWatingForVerify ? '재전송' : '인증코드 전송'}
-                    </button>
-                </div>
-                <div
-                    className="flex w-full items-center justify-center animate-fadeIn opacity-0"
-                    style={{ animationDelay: '2.0s' }}
-                >
-                    <p>인증코드</p>
-                    <input
-                        type="text"
-                        placeholder="인증코드 입력"
-                        className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
-                        ref={verifyCodeRef}
-                    />
-                    <button
-                        className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400"
-                        onClick={onVerifyEmail}
-                    >
-                        인증
-                    </button>
-                </div>
+                <VerifyEmailSection
+                    emailRef={emailRef}
+                    verifyCodeRef={verifyCodeRef}
+                    isWaitingForVerify={isWaitingForVerify}
+                    onVerifyEmail={onVerifyEmail}
+                    onSendVerifyCode={onSendVerifyCode}
+                />
                 <div
                     className="flex w-full animate-fadeIn opacity-0"
                     style={{ animationDelay: '2.5s' }}
@@ -198,7 +65,7 @@ export default function CreateProofSection({
                 <button
                     className="w-full h-32 bg-secondary text-white rounded-12 mt-12 animate-fadeIn opacity-0 disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed"
                     style={{ animationDelay: '3.0s' }}
-                    onClick={onCreateVC}
+                    onClick={onCreateVcAndProof}
                     disabled={!isVerified}
                 >
                     Proof 생성
@@ -208,30 +75,98 @@ export default function CreateProofSection({
                 className="w-[calc(100%-16px)] animate-fadeIn opacity-0 bg-secondary h-2 mt-24"
                 style={{ animationDelay: '4.0s' }}
             />
-            <div
-                id="proof-view"
-                className="flex flex-col gap-y-4 w-full px-24 animate-fadeIn opacity-0"
-                style={{ animationDelay: '4.5s' }}
-            >
-                <div className="flex w-full">
-                    <label>VC</label>
-                    <textarea
-                        disabled={true}
-                        className="ml-auto w-168 h-20 focus:outline-none bg-white border border-gray-300"
-                    >
-                        {auth.did?.vc}
-                    </textarea>
-                </div>
-                <div className="flex w-full">
-                    <label>ZK-Proof</label>
-                    <textarea
-                        disabled={true}
-                        className="ml-auto w-168 h-20 focus:outline-none bg-white border border-gray-300"
-                    >
-                        {auth.proof}
-                    </textarea>
-                </div>
-            </div>
+            <ProofViewContainer
+                stringifyVc={auth?.did.vc}
+                stringifyProof={auth.proof}
+            />
         </section>
+    );
+}
+
+function VerifyEmailSection({
+    emailRef,
+    verifyCodeRef,
+    isWaitingForVerify,
+    onVerifyEmail,
+    onSendVerifyCode,
+}: {
+    emailRef: MutableRefObject<HTMLInputElement>;
+    verifyCodeRef: MutableRefObject<HTMLInputElement>;
+    isWaitingForVerify: boolean;
+    onVerifyEmail: () => void;
+    onSendVerifyCode: () => void;
+}) {
+    return (
+        <>
+            <div
+                className="flex w-full items-center justify-center animate-fadeIn opacity-0"
+                style={{ animationDelay: '2.0s' }}
+            >
+                <p>이메일</p>
+                <input
+                    type="email"
+                    placeholder="학과 이메일"
+                    className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
+                    ref={emailRef}
+                />
+                <button
+                    className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400"
+                    onClick={onSendVerifyCode}
+                >
+                    {isWaitingForVerify ? '재전송' : '인증코드 전송'}
+                </button>
+            </div>
+            <div
+                className="flex w-full items-center justify-center animate-fadeIn opacity-0"
+                style={{ animationDelay: '2.0s' }}
+            >
+                <p>인증코드</p>
+                <input
+                    type="text"
+                    placeholder="인증코드 입력"
+                    className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
+                    ref={verifyCodeRef}
+                />
+                <button
+                    className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400"
+                    onClick={onVerifyEmail}
+                >
+                    인증
+                </button>
+            </div>
+        </>
+    );
+}
+
+function ProofViewContainer({
+    stringifyVc,
+    stringifyProof,
+}: {
+    stringifyVc: string;
+    stringifyProof: string;
+}) {
+    return (
+        <div
+            id="proof-view"
+            className="flex flex-col gap-y-4 w-full px-24 animate-fadeIn opacity-0"
+            style={{ animationDelay: '4.5s' }}
+        >
+            <div className="flex w-full">
+                <label>VC</label>
+                <textarea
+                    disabled={true}
+                    className="ml-auto w-168 h-20 focus:outline-none bg-white border border-gray-300"
+                    value={stringifyVc}
+                />
+            </div>
+            <div className="flex w-full">
+                <label>ZK-Proof</label>
+                <textarea
+                    disabled={true}
+                    className="ml-auto w-168 h-20 focus:outline-none bg-white border border-gray-300"
+                    value={stringifyProof}
+                />
+            </div>
+        </div>
     );
 }

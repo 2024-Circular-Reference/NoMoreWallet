@@ -8,7 +8,7 @@ import { useLoading } from '@root/src/stores/useLoading';
 import axios from '@root/src/pages/lib/utils/axios';
 import { IProofData } from '@root/src/types/proof';
 
-import init, { wasm_test } from 'zkp_circuit';
+// import init, { wasm_test } from 'zkp_circuit';
 
 const createAccount = async (id: string) => {
     console.log('create account');

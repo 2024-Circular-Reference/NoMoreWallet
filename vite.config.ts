@@ -50,7 +50,6 @@ export default defineConfig({
                 global: true,
             },
         }),
-        vitePluginWasmPack(['zkp_circuit']),
     ],
     publicDir,
     build: {

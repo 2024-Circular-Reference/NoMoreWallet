@@ -1,14 +1,8 @@
 import * as snarkjs from 'snarkjs';
-import { padLeftTo32 } from '@pages/lib/utils/lib';
+import { padLeftTo32, padLeftTo64 } from '@pages/lib/utils/lib';
 import { buildBabyjub, buildEddsa } from 'circomlibjs';
 
-export default function useZkProof({
-    vcNumberString,
-    nearPrivateKeyString,
-}: {
-    vcNumberString: string;
-    nearPrivateKeyString: string;
-}) {
+export default function useZkProof() {
     const buffer2bits = (buff) => {
         const res = [];
         for (let i = 0; i < buff.length; i++) {
@@ -23,13 +17,15 @@ export default function useZkProof({
         return res;
     };
 
-    const convertInput = async () => {
+    const convertInput = async (vcNumberString, nearPrivateKeyString) => {
         const eddsa = await buildEddsa();
         const babyJub = await buildBabyjub();
-
+        console.log(vcNumberString, nearPrivateKeyString);
         // VC_no_1337
-        const msg = Buffer.from(padLeftTo32(vcNumberString), 'hex');
-
+        const msg = Buffer.from(padLeftTo64(vcNumberString, '0'), 'hex');
+        console.log('msgwithpad : ', padLeftTo32(vcNumberString, '0'));
+        console.log('msg: ', msg);
+        console.log('msg: ', msg.length);
         // NEAR Private Key
         const prvKey = Buffer.from(padLeftTo32(nearPrivateKeyString), 'hex');
 
@@ -73,14 +69,17 @@ export default function useZkProof({
         return inputs;
     };
 
-    const generateZkProof = async () => {
-        const inputs = await convertInput();
+    const generateZkProof = async (
+        vcNumberString: string,
+        nearPrivateKeyString: string
+    ) => {
+        const inputs = await convertInput(vcNumberString, nearPrivateKeyString);
 
         const { proof, publicSignals } = await snarkjs.groth16.fullProve(
             // elements of field should be in binary form and the size should be `256`.
             inputs,
-            './circuit/circuit_js/circuit.wasm',
-            './keys/circuit_final.zkey'
+            '/zk/circuit.wasm',
+            '/zk/circuit_final.zkey'
         );
 
         console.log('proof: ', proof);
