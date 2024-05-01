@@ -50,7 +50,6 @@ export default function CreateAccountSection({ onNextStep, isActive }: Props) {
             onNextStep();
         } catch (e) {
             console.error(e);
-            // alert('계정 이름이 중복되었습니다! 다른 이름을 입력해주세요.');
             openToast(
                 '계정 이름이 중복되었습니다! 다른 이름을 입력해주세요.',
                 'error'

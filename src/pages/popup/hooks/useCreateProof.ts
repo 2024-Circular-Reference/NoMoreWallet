@@ -4,19 +4,20 @@ import { FormEvent, useRef, useState } from 'react';
 import { useToast } from '@src/stores/useToast';
 import { useVerifyEmail } from '@src/stores/useVerifyEmail';
 import axios from '@pages/lib/utils/axios';
-import useZkProof from '@src/hooks/useZkProof';
 import { useJwt } from 'react-jwt';
+import useZkProof from '@pages/popup/hooks/useZkProof';
 
 export default function useCreateProof() {
-    const { auth, setDid, setProof } = useAuth();
-    const { setLoading } = useLoading();
     const emailRef = useRef<HTMLInputElement>();
     const verifyCodeRef = useRef<HTMLInputElement>();
+    const { auth, setDid, setProof } = useAuth();
+    const { setLoading } = useLoading();
     const { openToast } = useToast();
+    const { generateZkProof } = useZkProof();
     const { verifingCode, setVerifingCode, setVerified, isVerified } =
         useVerifyEmail();
-    const [isWaitingForVerify, setIsWaitingForVerify] = useState(false);
 
+    const [isWaitingForVerify, setIsWaitingForVerify] = useState(false);
     const onCreateVcAndProof = async (e: FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -44,19 +45,20 @@ export default function useCreateProof() {
                     issuerPublicKey: res.data.data.issuerPubKey,
                 });
                 console.log(JSON.parse(res.data.data.vc));
-                console.log('DID 생성이 완료되었습니다. Proof를 생성합니다.');
+                openToast(
+                    'DID 생성이 완료되었습니다. Proof를 생성합니다.',
+                    'success'
+                );
                 await onCreateProof('1234567890');
             } else {
                 throw new Error('failed create vc' + res);
             }
         } catch (e) {
             console.error(e);
-            alert('DID 생성에 실패했습니다. 다시 시도해주세요.');
+            openToast('DID 생성에 실패했습니다. 다시 시도해주세요.', 'error');
         }
         setLoading(false);
     };
-
-    const { generateZkProof } = useZkProof();
 
     const onCreateProof = async (vcNumber: string) => {
         console.log('onCreateProof');

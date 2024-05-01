@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import CreateAccountSection from '@pages/popup/app/init/create-account';
-import CreateProofSection from '@pages/popup/app/init/create-proof';
-import VerifyProofSection from '@pages/popup/app/init/verify-proof';
-import LandingSection from '@pages/popup/app/init/landing';
+import CreateAccountSection from '@pages/popup/app/create-account';
+import CreateProofSection from '@pages/popup/app/create-proof';
+import VerifyProofSection from '@pages/popup/app/verify-proof';
+import LandingSection from '@pages/popup/app/landing';
 
 const TOTAL_STEP = 4;
 

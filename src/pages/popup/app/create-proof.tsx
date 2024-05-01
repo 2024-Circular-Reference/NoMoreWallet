@@ -1,6 +1,6 @@
 import { cls } from '@root/utils/util';
 import { MutableRefObject } from 'react';
-import useCreateProof from '@pages/popup/app/_hook/useCreateProof';
+import useCreateProof from '@pages/popup/hooks/useCreateProof';
 
 export default function CreateProofSection({
     onNextStep,
