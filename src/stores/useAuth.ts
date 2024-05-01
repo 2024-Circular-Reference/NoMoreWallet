@@ -1,10 +1,6 @@
 import { create } from 'zustand';
 import { UserAccount } from '@src/types/wallet';
-
-interface IUserInfo {
-    email: string;
-    studentId: string;
-}
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface IDid {
     vc: object;
@@ -14,7 +10,7 @@ interface IDid {
 
 interface IAuth {
     account: UserAccount | null;
-    userInfo: IUserInfo;
+    email: string;
     did: IDid;
     proof: object;
 }
@@ -22,45 +18,26 @@ interface IAuth {
 interface IAuthState {
     auth: IAuth;
     setAccount: (account: UserAccount) => void;
-    setUserInfo: (userInfo: IUserInfo) => void;
+    setEmail: (email: string) => void;
     setDid: (did: IDid) => void;
     setProof: (proof: object) => void;
     clearAuth: () => void;
 }
 
-export const useAuth = create<IAuthState>((set) => ({
-    auth: {
-        account: {
-            seedPhrase: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_SEED_PHRASE,
-            publicKey: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_PUBLIC_KEY,
-            secretKey: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_SECRET_KEY,
-            accountId: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_ID,
-        } as UserAccount,
-        userInfo: {
-            email: '',
-            studentId: '',
-        },
-        did: {
-            vc: {},
-            vp: '',
-            issuerPublicKey: '',
-        },
-        proof: {},
-    },
-    setAccount: (account) =>
-        set((state) => ({ auth: { ...state.auth, account } })),
-    setUserInfo: (userInfo) =>
-        set((state) => ({ auth: { ...state.auth, userInfo } })),
-    setDid: (did) => set((state) => ({ auth: { ...state.auth, did } })),
-    setProof: (proof) => set((state) => ({ auth: { ...state.auth, proof } })),
-    clearAuth: () =>
-        set({
+export const useAuth = create(
+    persist<IAuthState>(
+        (set) => ({
             auth: {
-                account: null,
-                userInfo: {
-                    email: '',
-                    studentId: '',
-                },
+                account: {
+                    seedPhrase: import.meta.env
+                        .VITE_TESTNET_TEST_ACCOUNT_SEED_PHRASE,
+                    publicKey: import.meta.env
+                        .VITE_TESTNET_TEST_ACCOUNT_PUBLIC_KEY,
+                    secretKey: import.meta.env
+                        .VITE_TESTNET_TEST_ACCOUNT_SECRET_KEY,
+                    accountId: import.meta.env.VITE_TESTNET_TEST_ACCOUNT_ID,
+                } as UserAccount,
+                email: '',
                 did: {
                     vc: {},
                     vp: '',
@@ -68,5 +45,30 @@ export const useAuth = create<IAuthState>((set) => ({
                 },
                 proof: {},
             },
+            setAccount: (account) =>
+                set((state) => ({ auth: { ...state.auth, account } })),
+            setEmail: (email) =>
+                set((state) => ({ auth: { ...state.auth, email } })),
+            setDid: (did) => set((state) => ({ auth: { ...state.auth, did } })),
+            setProof: (proof) =>
+                set((state) => ({ auth: { ...state.auth, proof } })),
+            clearAuth: () =>
+                set({
+                    auth: {
+                        account: null,
+                        email: '',
+                        did: {
+                            vc: {},
+                            vp: '',
+                            issuerPublicKey: '',
+                        },
+                        proof: {},
+                    },
+                }),
         }),
-}));
+        {
+            name: 'no-more-wallet-proof', // name of the item in the storage (must be unique)
+            storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
+        }
+    )
+);

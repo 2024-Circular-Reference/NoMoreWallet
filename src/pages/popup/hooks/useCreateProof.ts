@@ -1,6 +1,6 @@
 import { useAuth } from '@src/stores/useAuth';
 import { useLoading } from '@src/stores/useLoading';
-import { FormEvent, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useToast } from '@src/stores/useToast';
 import { useVerifyEmail } from '@src/stores/useVerifyEmail';
 import axios from '@pages/lib/utils/axios';
@@ -10,7 +10,7 @@ import useZkProof from '@pages/popup/hooks/useZkProof';
 export default function useCreateProof() {
     const emailRef = useRef<HTMLInputElement>();
     const verifyCodeRef = useRef<HTMLInputElement>();
-    const { auth, setDid, setProof } = useAuth();
+    const { auth, setDid, setProof, setEmail } = useAuth();
     const { setLoading } = useLoading();
     const { openToast } = useToast();
     const { generateZkProof } = useZkProof();
@@ -34,6 +34,7 @@ export default function useCreateProof() {
             console.log(res);
             if (res.data.statusCode === 200) {
                 // TODO: 생성된 VC 검증하는 로직 구현
+                setEmail(email);
                 setDid({
                     vc: JSON.parse(res.data.data.vc),
                     vp: {

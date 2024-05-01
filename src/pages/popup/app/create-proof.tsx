@@ -53,14 +53,15 @@ export default function CreateProofSection({
                     className="flex w-full animate-fadeIn opacity-0"
                     style={{ animationDelay: '1.5s' }}
                 >
-                    <p>증명 발급 기관</p>
-                    <select className="p-2 border border-gray-300 rounded-8 mb-4 ml-auto w-168">
+                    <p>인증기관</p>
+                    <select className="p-2 border border-gray-300 rounded-8 ml-auto w-192">
                         <option value="pnu">부산대학교</option>
                         <option value="donga">동아대학교</option>
                         <option value="pknu">부경대학교</option>
                     </select>
                 </div>
                 <VerifyEmailSection
+                    email={auth.email}
                     emailRef={emailRef}
                     verifyCodeRef={verifyCodeRef}
                     isVerified={isVerified}
@@ -73,7 +74,7 @@ export default function CreateProofSection({
                     style={{ animationDelay: '2.5s' }}
                 >
                     <label>계정 ID</label>
-                    <p className="ml-auto">{auth.account?.accountId}.testnet</p>
+                    <p className="ml-auto">{auth.account?.accountId}</p>
                 </div>
                 <button
                     className="w-full h-32 bg-secondary text-white rounded-12 mt-12 animate-fadeIn opacity-0 disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed"
@@ -89,6 +90,7 @@ export default function CreateProofSection({
 }
 
 function VerifyEmailSection({
+    email,
     emailRef,
     verifyCodeRef,
     isVerified,
@@ -96,6 +98,7 @@ function VerifyEmailSection({
     onVerifyEmail,
     onSendVerifyCode,
 }: {
+    email: string;
     emailRef: MutableRefObject<HTMLInputElement>;
     verifyCodeRef: MutableRefObject<HTMLInputElement>;
     isVerified: boolean;
@@ -114,37 +117,48 @@ function VerifyEmailSection({
                     type="email"
                     placeholder="학과 이메일"
                     className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
+                    defaultValue={email || ''}
                     ref={emailRef}
                 />
                 <button
-                    className="bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400"
+                    className="bg-blue-400 text-white px-4 w-56 rounded-r-8 border border-blue-400"
                     onClick={onSendVerifyCode}
                 >
-                    {isWaitingForVerify ? '재전송' : '인증코드 전송'}
+                    {isWaitingForVerify ? '재전송' : '인증코드'}
                 </button>
             </div>
-            <div
-                className="flex w-full items-center justify-center animate-fadeIn opacity-0"
-                style={{ animationDelay: '2.0s' }}
-            >
-                <p>인증코드</p>
-                <input
-                    type="text"
-                    placeholder="인증코드 입력"
-                    className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
-                    ref={verifyCodeRef}
-                />
-                <button
-                    className={cls(
-                        'bg-blue-400 text-white px-4 rounded-r-8 border border-blue-400',
-                        'disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50'
-                    )}
-                    onClick={onVerifyEmail}
-                    disabled={isVerified}
+            {isWaitingForVerify && (
+                <div
+                    className="flex w-full items-center justify-center animate-fadeIn opacity-0"
+                    style={{ animationDelay: '2.0s' }}
                 >
-                    인증
-                </button>
-            </div>
+                    <p>인증코드</p>
+                    <input
+                        type="text"
+                        placeholder="인증코드 입력"
+                        className="px-4 border border-gray-300 rounded-l-8 ml-auto focus:outline-none w-136"
+                        ref={verifyCodeRef}
+                    />
+                    <button
+                        className={cls(
+                            'bg-blue-400 text-white px-4 w-56 rounded-r-8 border border-blue-400',
+                            'disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:border-gray-400'
+                        )}
+                        onClick={onVerifyEmail}
+                        disabled={isVerified}
+                    >
+                        인증
+                    </button>
+                </div>
+            )}
+            {isVerified && (
+                <div
+                    className="flex w-full items-center justify-center animate-fadeIn opacity-0"
+                    style={{ animationDelay: '2.0s' }}
+                >
+                    인증 완료
+                </div>
+            )}
         </>
     );
 }

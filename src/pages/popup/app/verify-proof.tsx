@@ -37,7 +37,7 @@ export default function VerifyProofSection({
                     style={{ animationDelay: '1.5s' }}
                 >
                     <label>검증기관</label>
-                    <select className="border ml-auto w-168 rounded-8 p-2">
+                    <select className="border ml-auto w-192 rounded-8 p-2">
                         <option>짝사랑종이배</option>
                         <option>열품타</option>
                         <option>에브리타임</option>
