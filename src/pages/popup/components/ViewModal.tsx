@@ -10,6 +10,18 @@ export default function ViewModal() {
 
     const jsonData = JSON.stringify(data?.value, null, 2);
 
+    const onDownloadJsonFile = () => {
+        const blob = new Blob([jsonData], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${data?.label}-data.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <Portal>
             <div
@@ -26,12 +38,10 @@ export default function ViewModal() {
                 </div>
                 <div className="flex gap-x-8 w-full">
                     <button
-                        onClick={() => {
-                            navigator.clipboard.writeText(jsonData);
-                        }}
+                        onClick={onDownloadJsonFile}
                         className="w-full h-fit p-2 bg-secondary text-white text-18"
                     >
-                        복사
+                        다운로드
                     </button>
                     <button
                         onClick={closeModal}
