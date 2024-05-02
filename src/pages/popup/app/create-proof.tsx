@@ -42,7 +42,7 @@ export default function CreateProofSection({
                 style={{ animationDelay: '0.5s' }}
             >
                 <p className="text-20 font-bold mt-24 text-center">
-                    2. 학교에서 발급받은 인증서로
+                    2. 학교에서 인증서를 발급받고
                 </p>
                 <p className="text-20 font-bold text-center">
                     당신만의 증명을 생성해보세요!
