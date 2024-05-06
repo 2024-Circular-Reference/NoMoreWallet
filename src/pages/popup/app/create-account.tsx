@@ -86,7 +86,11 @@ export default function CreateAccountSection({ onNextStep, isActive }: Props) {
                 >
                     <input
                         ref={accountIdRef}
-                        defaultValue={auth.account?.accountId}
+                        defaultValue={
+                            auth.account?.accountId
+                                ? auth.account.accountId.split('.')[0]
+                                : ''
+                        }
                         placeholder="Account ID"
                         className="w-fit focus:outline-none bg-transparent text-lg"
                         type="text"

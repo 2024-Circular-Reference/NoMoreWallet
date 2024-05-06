@@ -3,6 +3,7 @@ import { Message } from '@src/types/message';
 import { cls } from '@root/utils/util';
 import { useAuth } from '@src/stores/useAuth';
 import { useViewModalStore } from '@src/stores/useViewModal';
+import { useState } from 'react';
 
 export default function VerifyProofSection({
     isActive,
@@ -15,6 +16,12 @@ export default function VerifyProofSection({
             Message.FROM_EXTENSION_TO_PAGE,
             '얘 부산대 정컴 학생 맞음 ㅇㅇ'
         );
+    };
+
+    const [selectedService, setSelectedService] = useState('짝사랑종이배');
+
+    const onServiceChange = (e) => {
+        setSelectedService(e.target.value);
     };
 
     return (
@@ -37,7 +44,10 @@ export default function VerifyProofSection({
                     style={{ animationDelay: '1.5s' }}
                 >
                     <label>검증기관</label>
-                    <select className="border ml-auto w-192 rounded-8 p-2">
+                    <select
+                        className="border ml-auto w-192 rounded-8 p-2"
+                        onChange={onServiceChange}
+                    >
                         <option>짝사랑종이배</option>
                         <option>열품타</option>
                         <option>에브리타임</option>
@@ -55,7 +65,7 @@ export default function VerifyProofSection({
                     style={{ animationDelay: '2.5s' }}
                     onClick={onClick}
                 >
-                    짝사랑종이배에 증명 제출하기
+                    {selectedService}에 증명 제출하기
                 </button>
             </div>
         </section>

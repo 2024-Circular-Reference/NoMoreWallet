@@ -121,8 +121,12 @@ function VerifyEmailSection({
                     ref={emailRef}
                 />
                 <button
-                    className="bg-blue-400 text-white px-4 w-56 rounded-r-8 border border-blue-400"
+                    className={cls(
+                        'bg-blue-400 text-white px-4 w-56 rounded-r-8 border border-blue-400',
+                        'disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:border-gray-400'
+                    )}
                     onClick={onSendVerifyCode}
+                    disabled={isVerified}
                 >
                     {isWaitingForVerify ? '재전송' : '인증코드'}
                 </button>
