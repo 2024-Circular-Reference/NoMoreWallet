@@ -14,7 +14,7 @@ export default function VerifyProofSection({
     const onClick = () => {
         sendMessageToContentScript(
             Message.FROM_EXTENSION_TO_PAGE,
-            '얘 부산대 정컴 학생 맞음 ㅇㅇ'
+            JSON.stringify(auth.proof)
         );
     };
 
