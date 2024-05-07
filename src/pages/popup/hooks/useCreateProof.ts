@@ -10,7 +10,7 @@ import useZkProof from '@pages/popup/hooks/useZkProof';
 export default function useCreateProof() {
     const emailRef = useRef<HTMLInputElement>();
     const verifyCodeRef = useRef<HTMLInputElement>();
-    const { auth, setDid, setProof, setEmail } = useAuth();
+    const { auth, setDid, setProof, setPublicSignals, setEmail } = useAuth();
     const { setLoading } = useLoading();
     const { openToast } = useToast();
     const { generateZkProof } = useZkProof();
@@ -64,8 +64,9 @@ export default function useCreateProof() {
     const onCreateProof = async (vcNumber: string) => {
         console.log('Vc No: ', vcNumber);
         const res = await generateZkProof(vcNumber, auth.account.secretKey);
-        console.log(res.proof);
+        console.log(res);
         setProof(res.proof);
+        setPublicSignals(res.publicSignals);
     };
 
     const onSendVerifyCode = async () => {

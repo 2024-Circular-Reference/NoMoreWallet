@@ -14,7 +14,12 @@ export default function VerifyProofSection({
     const onClick = () => {
         sendMessageToContentScript(
             Message.FROM_EXTENSION_TO_PAGE,
-            JSON.stringify(auth.proof)
+            JSON.stringify({
+                proof: auth.proof,
+                holderPubKey: auth.account.publicKey,
+                issuerPubKey: auth.did.issuerPublicKey,
+                publicSignals: auth.publicSignals,
+            })
         );
     };
 

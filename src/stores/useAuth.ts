@@ -13,6 +13,7 @@ interface IAuth {
     email: string;
     did: IDid;
     proof: object;
+    publicSignals: object;
 }
 
 interface IAuthState {
@@ -21,6 +22,7 @@ interface IAuthState {
     setEmail: (email: string) => void;
     setDid: (did: IDid) => void;
     setProof: (proof: object) => void;
+    setPublicSignals: (publicSignals: object) => void;
     clearAuth: () => void;
 }
 
@@ -44,6 +46,7 @@ export const useAuth = create(
                     issuerPublicKey: '',
                 },
                 proof: {},
+                publicSignals: {},
             },
             setAccount: (account) =>
                 set((state) => ({ auth: { ...state.auth, account } })),
@@ -52,6 +55,8 @@ export const useAuth = create(
             setDid: (did) => set((state) => ({ auth: { ...state.auth, did } })),
             setProof: (proof) =>
                 set((state) => ({ auth: { ...state.auth, proof } })),
+            setPublicSignals: (publicSignals) =>
+                set((state) => ({ auth: { ...state.auth, publicSignals } })),
             clearAuth: () =>
                 set({
                     auth: {
@@ -63,6 +68,7 @@ export const useAuth = create(
                             issuerPublicKey: '',
                         },
                         proof: {},
+                        publicSignals: {},
                     },
                 }),
         }),
