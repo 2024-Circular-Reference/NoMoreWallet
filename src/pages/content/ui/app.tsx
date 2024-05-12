@@ -6,8 +6,12 @@ export default function App() {
     }, []);
 
     return (
-        <div className="" id="2024-pnu-wallet">
-            2024 순환참조 지갑 흔적
+        <div
+            className=""
+            id="2024-pnu-no-more-wallet"
+            style={{ display: 'none' }}
+        >
+            2024 순환참조의 NoMoreWallet이 설치되어 있다는 흔적입니다.
         </div>
     );
 }
