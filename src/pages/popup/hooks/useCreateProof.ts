@@ -18,6 +18,7 @@ export default function useCreateProof() {
         useVerifyEmail();
 
     const [isWaitingForVerify, setIsWaitingForVerify] = useState(false);
+
     const onCreateVcAndProof = async (): Promise<boolean> => {
         setLoading(true);
         const email = emailRef.current.value;

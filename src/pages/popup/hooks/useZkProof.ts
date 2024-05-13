@@ -1,6 +1,7 @@
 import * as snarkjs from 'snarkjs';
 import { padLeftTo32, padLeftTo64 } from '@pages/lib/utils/lib';
 import { buildBabyjub, buildEddsa } from 'circomlibjs';
+import { stringToUint8Array } from '@root/utils/util';
 
 export default function useZkProof() {
     const buffer2bits = (buff) => {
@@ -22,7 +23,8 @@ export default function useZkProof() {
         const babyJub = await buildBabyjub();
         console.log(vcNumberString, nearPrivateKeyString);
         // VC_no_1337
-        const msg = '00' + Buffer.from(padLeftTo64(vcNumberString, '0'), 'hex');
+        const msg =
+            '0000' + Buffer.from(padLeftTo64(vcNumberString, '0'), 'hex');
         console.log('padding msg: ', padLeftTo64(vcNumberString, '0'));
         console.log('padding msg: ', padLeftTo64(vcNumberString, '0').length);
         console.log('msg: ', msg);

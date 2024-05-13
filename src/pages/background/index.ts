@@ -9,6 +9,7 @@ import 'webextension-polyfill';
 import Logger from '@src/pages/lib/utils/logger';
 import { wallet } from '../lib/near/wallet';
 import { UserAccount } from '@root/src/types/wallet';
+import axios from '@pages/lib/utils/axios';
 
 reloadOnUpdate('pages/background');
 
@@ -44,7 +45,7 @@ chrome.runtime.onConnect.addListener((port) => {
                     break;
                 }
                 case 'CreateAccount': {
-                    console.log('create account!');
+                    console.log('[Create Account]!!!');
                     const success = await wallet.createAccountOnTestnet(
                         message.input.id
                     );
@@ -57,6 +58,26 @@ chrome.runtime.onConnect.addListener((port) => {
                             publicKey,
                             secretKey
                         );
+
+                        console.log('DID 등록 시작');
+                        try {
+                            const res = await axios({
+                                method: 'post',
+                                url: 'http://localhost:8081/api/holder/reg-did',
+                                data: {
+                                    holderPubKey: publicKey,
+                                },
+                            });
+                            console.log(res);
+                            if (res.data.statusCode === 200) {
+                                console.log('DID 등록이 완료되었습니다.');
+                            } else {
+                                throw new Error('failed register did' + res);
+                            }
+                        } catch (e) {
+                            console.error(e);
+                        }
+
                         sendResponse({
                             type: 'CreateAccount',
                             data: {

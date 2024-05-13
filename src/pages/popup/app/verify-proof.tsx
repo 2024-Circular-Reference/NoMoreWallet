@@ -16,7 +16,7 @@ export default function VerifyProofSection({
             Message.FROM_EXTENSION_TO_PAGE,
             JSON.stringify({
                 proof: auth.proof,
-                holderPubKey: auth.account.publicKey,
+                holderPubKey: auth.account.accountId,
                 issuerPubKey: auth.did.issuerPublicKey,
                 publicSignals: auth.publicSignals,
             })
