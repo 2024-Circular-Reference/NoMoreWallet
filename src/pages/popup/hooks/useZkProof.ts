@@ -18,40 +18,31 @@ export default function useZkProof() {
         return res;
     };
 
-    const convertInput = async (vcNumberString, nearPrivateKeyString) => {
+    const convertInput = async (vcNumberString: string, proofValue: string) => {
         const eddsa = await buildEddsa();
         const babyJub = await buildBabyjub();
-        console.log(vcNumberString, nearPrivateKeyString);
+        // console.log(vcNumberString, nearPrivateKeyString);
         // VC_no_1337
         const msg =
             '0000' + Buffer.from(padLeftTo64(vcNumberString, '0'), 'hex');
-        console.log('padding msg: ', padLeftTo64(vcNumberString, '0'));
-        console.log('padding msg: ', padLeftTo64(vcNumberString, '0').length);
-        console.log('msg: ', msg);
-        console.log('msg: ', msg.length);
-        // NEAR Private Key
-        const prvKey = Buffer.from(padLeftTo32(nearPrivateKeyString), 'hex');
-
-        // deriv from prvKey
-        const pubKey = eddsa.prv2pub(prvKey);
 
         // drive from pubKey
-        const pPubKey = babyJub.packPoint(pubKey);
-
-        // deriv from prvKey, msg
-        const signature = eddsa.signPedersen(prvKey, msg);
-
-        // deriv from Signature
-        const pSignature = eddsa.packSignature(signature);
-        const uSignature = eddsa.unpackSignature(pSignature);
-
-        // check validity
-        console.assert(eddsa.verifyPedersen(msg, uSignature, pubKey));
+        // const pPubKey = babyJub.packPoint(pubKey);
+        //
+        // // deriv from prvKey, msg
+        // const signature = eddsa.signPedersen(prvKey, msg);
+        //
+        // // deriv from Signature
+        // const pSignature = eddsa.packSignature(signature);
+        // const uSignature = eddsa.unpackSignature(pSignature);
+        //
+        // // check validity
+        // console.assert(eddsa.verifyPedersen(msg, proofValue, pubKey));
 
         // output: {msg, pSignature, pPubKey}
         const msgBits = buffer2bits(msg);
-        const r8Bits = buffer2bits(pSignature.slice(0, 32));
-        const sBits = buffer2bits(pSignature.slice(32, 64));
+        const r8Bits = buffer2bits(proofValue.slice(0, 32));
+        const sBits = buffer2bits(proofValue.slice(32, 64));
         const aBits = buffer2bits(pPubKey);
 
         console.log(
@@ -74,9 +65,9 @@ export default function useZkProof() {
 
     const generateZkProof = async (
         vcNumberString: string,
-        nearPrivateKeyString: string
+        proofValue: string
     ) => {
-        const inputs = await convertInput(vcNumberString, nearPrivateKeyString);
+        const inputs = await convertInput(vcNumberString, proofValue);
 
         const { proof, publicSignals } = await snarkjs.groth16.fullProve(
             // elements of field should be in binary form and the size should be `256`.

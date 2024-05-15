@@ -47,8 +47,10 @@ export default function useCreateProof() {
                 });
                 console.log(res.data.data);
                 console.log('DID 생성이 완료되었습니다. Proof를 생성합니다.');
+                console.log(auth.did.vc);
                 const vcNumber = res.data.data.message;
-                await onCreateProof(vcNumber);
+                const { proofValue } = auth.did.vc.proof;
+                await onCreateProof(vcNumber, proofValue);
             } else {
                 throw new Error('failed create vc' + res);
             }
@@ -62,9 +64,10 @@ export default function useCreateProof() {
         return true;
     };
 
-    const onCreateProof = async (vcNumber: string) => {
+    const onCreateProof = async (vcNumber: string, proofValue: string) => {
         console.log('Vc No: ', vcNumber);
-        const res = await generateZkProof(vcNumber, auth.account.secretKey);
+        console.log('proofValue: ', proofValue);
+        const res = await generateZkProof(vcNumber, proofValue);
         console.log(res);
         setProof(res.proof);
         setPublicSignals(res.publicSignals);

@@ -3,7 +3,7 @@ import { UserAccount } from '@src/types/wallet';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface IDid {
-    vc: object;
+    vc: any;
     vp: any;
     issuerPublicKey: string;
 }
