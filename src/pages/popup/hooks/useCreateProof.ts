@@ -6,6 +6,9 @@ import { useVerifyEmail } from '@src/stores/useVerifyEmail';
 import axios from '@pages/lib/utils/axios';
 import { useJwt } from 'react-jwt';
 import useZkProof from '@pages/popup/hooks/useZkProof';
+import * as nearAPI from 'near-api-js';
+import { connect, keyStores } from 'near-api-js';
+import bs58 from 'bs58';
 
 export default function useCreateProof() {
     const emailRef = useRef<HTMLInputElement>();
@@ -18,6 +21,26 @@ export default function useCreateProof() {
         useVerifyEmail();
 
     const [isWaitingForVerify, setIsWaitingForVerify] = useState(false);
+
+    const convertAccountIdToPubKey = async (accountId: string) => {
+        // accountId : (ex) bob.testnet
+        const { keyStores, connect } = nearAPI;
+        const myKeyStore = new keyStores.BrowserLocalStorageKeyStore();
+
+        const connectionConfig = {
+            networkId: 'testnet',
+            keyStore: myKeyStore,
+            nodeUrl: 'https://rpc.testnet.near.org',
+            walletUrl: 'https://wallet.testnet.near.org',
+            helperUrl: 'https://helper.testnet.near.org',
+            explorerUrl: 'https://explorer.testnet.near.org',
+        };
+        const near = await connect(connectionConfig);
+        const account = await near.account(accountId);
+        const accessKeys = await account.getAccessKeys();
+        console.log(accessKeys);
+        return accessKeys[0].public_key;
+    };
 
     const onCreateVcAndProof = async (): Promise<boolean> => {
         setLoading(true);
@@ -35,22 +58,28 @@ export default function useCreateProof() {
             console.log(res);
             if (res.data.statusCode === 200) {
                 // TODO: 생성된 VC 검증하는 로직 구현
+                const issuerPubKey = await convertAccountIdToPubKey(
+                    res.data.data.issuerPubKey
+                );
+                const hexIssuerPubKey = issuerPubKey.replace('ed25519:', '');
+                console.log(hexIssuerPubKey);
                 setEmail(email);
+                const vc = JSON.parse(res.data.data.vc);
                 setDid({
-                    vc: JSON.parse(res.data.data.vc),
+                    vc,
                     vp: {
                         '@context': ['https://www.w3.org/2018/credentials/v1'],
                         'type': ['VerifiablePresentation'],
                         'verifiableCredential': [res.data.data.vc],
                     },
-                    issuerPublicKey: res.data.data.issuerPubKey,
+                    issuerPublicKey: issuerPubKey,
                 });
                 console.log(res.data.data);
                 console.log('DID 생성이 완료되었습니다. Proof를 생성합니다.');
-                console.log(auth.did.vc);
+                console.log(vc);
                 const vcNumber = res.data.data.message;
-                const { proofValue } = auth.did.vc.proof;
-                await onCreateProof(vcNumber, proofValue);
+                const { proofValue } = vc.proof;
+                await onCreateProof(vcNumber, proofValue, hexIssuerPubKey);
             } else {
                 throw new Error('failed create vc' + res);
             }
@@ -64,10 +93,16 @@ export default function useCreateProof() {
         return true;
     };
 
-    const onCreateProof = async (vcNumber: string, proofValue: string) => {
-        console.log('Vc No: ', vcNumber);
-        console.log('proofValue: ', proofValue);
-        const res = await generateZkProof(vcNumber, proofValue);
+    const onCreateProof = async (
+        vcNumber: string,
+        proofValue: string,
+        hexIssuerPubKey: string
+    ) => {
+        const res = await generateZkProof(
+            vcNumber,
+            proofValue,
+            hexIssuerPubKey
+        );
         console.log(res);
         setProof(res.proof);
         setPublicSignals(res.publicSignals);

@@ -1,52 +1,65 @@
 import * as snarkjs from 'snarkjs';
-import { padLeftTo32, padLeftTo64 } from '@pages/lib/utils/lib';
-import { buildBabyjub, buildEddsa } from 'circomlibjs';
-import { stringToUint8Array } from '@root/utils/util';
+import { padLeftTo32, stringToHexString } from '@pages/lib/utils/lib';
+import bs58 from 'bs58';
+import { buffer2bits } from '@root/utils/util';
+import * as ed25519 from '@stablelib/ed25519';
 
 export default function useZkProof() {
-    const buffer2bits = (buff) => {
-        const res = [];
-        for (let i = 0; i < buff.length; i++) {
-            for (let j = 0; j < 8; j++) {
-                if ((buff[i] >> j) & 1) {
-                    res.push(1n);
-                } else {
-                    res.push(0n);
-                }
-            }
-        }
-        return res;
-    };
+    const ISSUER_PRI_KEY =
+        '3onivihW6fQRkB4NKiYUfXvzxQc1BkJ6B7hzUGLawPQYeDH4Q92QRWjoGXLfE3mdxXNVy3yoHe95yj9RQCEdghBh';
 
-    const convertInput = async (vcNumberString: string, proofValue: string) => {
-        const eddsa = await buildEddsa();
-        const babyJub = await buildBabyjub();
-        // console.log(vcNumberString, nearPrivateKeyString);
-        // VC_no_1337
-        const msg =
-            '0000' + Buffer.from(padLeftTo64(vcNumberString, '0'), 'hex');
+    // function form 'BE/issuer/issuer-api.service.ts'
+    function genMockProofValue(): { proofValue: string; mockMessage: string } {
+        const mockMessage: string = 'VC_no_1337';
+        return {
+            proofValue: bs58.encode(
+                ed25519.sign(
+                    bs58.decode(ISSUER_PRI_KEY),
+                    Buffer.from(mockMessage)
+                )
+            ),
+            mockMessage,
+        };
+    }
 
-        // drive from pubKey
-        // const pPubKey = babyJub.packPoint(pubKey);
-        //
-        // // deriv from prvKey, msg
-        // const signature = eddsa.signPedersen(prvKey, msg);
-        //
-        // // deriv from Signature
-        // const pSignature = eddsa.packSignature(signature);
-        // const uSignature = eddsa.unpackSignature(pSignature);
-        //
-        // // check validity
-        // console.assert(eddsa.verifyPedersen(msg, proofValue, pubKey));
+    const convertInput = async (
+        vcNumberString: string,
+        proofValue: string,
+        hexIssuerPubKey: string
+    ) => {
+        console.log('Vc No: ', vcNumberString);
+        console.log('proofValue: ', proofValue);
+        console.log('hexIssuerPubKey: ', hexIssuerPubKey);
 
-        // output: {msg, pSignature, pPubKey}
+        // 1. msg
+        const msg: Buffer = Buffer.from(
+            padLeftTo32(stringToHexString(vcNumberString), '0')
+        );
+
+        // 2. (issuer) public key
+        const pubKeyHexBuffer: Buffer = Buffer.from(
+            bs58.decode(hexIssuerPubKey)
+        );
+
+        // 3. Signature (sign with Issuer private key)
+        const sigBuffer = Buffer.from(bs58.decode(proofValue));
+
+        // 3-1. split signature into `r_sig` and `s_sig`
+        const r_sig = sigBuffer.subarray(0, 32);
+        const s_sig = sigBuffer.subarray(32, 64);
+
+        console.log('msg: ', msg);
+        console.log('pubKeyHexBuffer: ', pubKeyHexBuffer);
+        console.log('r_sig: ', r_sig);
+        console.log('s_sig: ', s_sig);
+
         const msgBits = buffer2bits(msg);
-        const r8Bits = buffer2bits(proofValue.slice(0, 32));
-        const sBits = buffer2bits(proofValue.slice(32, 64));
-        const aBits = buffer2bits(pPubKey);
+        const r8Bits = buffer2bits(r_sig);
+        const sBits = buffer2bits(s_sig);
+        const aBits = buffer2bits(pubKeyHexBuffer);
 
         console.log(
-            'lenght: ',
+            'lenghts:',
             msgBits.length,
             r8Bits.length,
             sBits.length,
@@ -59,16 +72,23 @@ export default function useZkProof() {
             sig_s: sBits,
             msg: msgBits,
         };
+
         console.log(inputs);
         return inputs;
     };
 
     const generateZkProof = async (
         vcNumberString: string,
-        proofValue: string
+        proofValue: string,
+        hexIssuerPubKey: string
     ) => {
-        const inputs = await convertInput(vcNumberString, proofValue);
-
+        const { proofValue: mockProofValue, mockMessage } = genMockProofValue();
+        // const inputs = await convertInput(mockMessage, mockProofValue, hexIssuerPubKey);
+        const inputs = await convertInput(
+            vcNumberString,
+            proofValue,
+            hexIssuerPubKey
+        );
         const { proof, publicSignals } = await snarkjs.groth16.fullProve(
             // elements of field should be in binary form and the size should be `256`.
             inputs,

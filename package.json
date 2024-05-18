@@ -27,7 +27,10 @@
     "type": "module",
     "dependencies": {
         "@haverstack/axios-fetch-adapter": "^0.12.0",
+        "@stablelib/ed25519": "^1.0.3",
+        "@types/bs58": "^4.0.4",
         "axios": "^1.6.7",
+        "bs58": "^5.0.0",
         "buffer": "^6.0.3",
         "circomlibjs": "^0.1.7",
         "construct-style-sheets-polyfill": "3.1.0",
