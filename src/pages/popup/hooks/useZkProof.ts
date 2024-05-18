@@ -25,11 +25,11 @@ export default function useZkProof() {
     const convertInput = async (
         vcNumberString: string,
         proofValue: string,
-        hexIssuerPubKey: string
+        bs58IssuerPubKey: string
     ) => {
         console.log('Vc No: ', vcNumberString);
         console.log('proofValue: ', proofValue);
-        console.log('hexIssuerPubKey: ', hexIssuerPubKey);
+        console.log('hexIssuerPubKey: ', bs58IssuerPubKey);
 
         // 1. msg
         const msg: Buffer = Buffer.from(
@@ -38,8 +38,10 @@ export default function useZkProof() {
 
         // 2. (issuer) public key
         const pubKeyHexBuffer: Buffer = Buffer.from(
-            bs58.decode(hexIssuerPubKey)
+            bs58.decode(bs58IssuerPubKey)
         );
+
+        console.log(bs58.decode(bs58IssuerPubKey));
 
         // 3. Signature (sign with Issuer private key)
         const sigBuffer = Buffer.from(bs58.decode(proofValue));

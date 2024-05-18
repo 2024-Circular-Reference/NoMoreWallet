@@ -61,8 +61,8 @@ export default function useCreateProof() {
                 const issuerPubKey = await convertAccountIdToPubKey(
                     res.data.data.issuerPubKey
                 );
-                const hexIssuerPubKey = issuerPubKey.replace('ed25519:', '');
-                console.log(hexIssuerPubKey);
+                const bs58IssuerPubKey = issuerPubKey.replace('ed25519:', '');
+                console.log(bs58IssuerPubKey);
                 setEmail(email);
                 const vc = JSON.parse(res.data.data.vc);
                 setDid({
@@ -79,7 +79,7 @@ export default function useCreateProof() {
                 console.log(vc);
                 const vcNumber = res.data.data.message;
                 const { proofValue } = vc.proof;
-                await onCreateProof(vcNumber, proofValue, hexIssuerPubKey);
+                await onCreateProof(vcNumber, proofValue, bs58IssuerPubKey);
             } else {
                 throw new Error('failed create vc' + res);
             }
@@ -96,12 +96,12 @@ export default function useCreateProof() {
     const onCreateProof = async (
         vcNumber: string,
         proofValue: string,
-        hexIssuerPubKey: string
+        bs58IssuerPubKey: string
     ) => {
         const res = await generateZkProof(
             vcNumber,
             proofValue,
-            hexIssuerPubKey
+            bs58IssuerPubKey
         );
         console.log(res);
         setProof(res.proof);
